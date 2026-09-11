@@ -27,6 +27,10 @@ class Unauthenticated extends AuthState {
   const Unauthenticated();
 }
 
+class AuthPasswordResetSent extends AuthState {
+  const AuthPasswordResetSent();
+}
+
 class AuthFailed extends AuthState {
   const AuthFailed(this.failure);
 

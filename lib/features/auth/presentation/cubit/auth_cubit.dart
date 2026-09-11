@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:demix/core/errors/app_failure.dart';
+import 'package:demix/features/auth/domain/entities/auth_session.dart';
 import 'package:demix/features/auth/domain/use_cases/observe_auth_state_use_case.dart';
 import 'package:demix/features/auth/domain/use_cases/send_password_reset_use_case.dart';
 import 'package:demix/features/auth/domain/use_cases/sign_in_as_guest_use_case.dart';
@@ -10,8 +11,6 @@ import 'package:demix/features/auth/domain/use_cases/sign_in_with_google_use_cas
 import 'package:demix/features/auth/domain/use_cases/sign_out_use_case.dart';
 import 'package:demix/features/auth/domain/use_cases/sign_up_with_email_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:demix/features/auth/domain/entities/auth_session.dart';
 
 import 'auth_state.dart';
 
@@ -159,10 +158,10 @@ class AuthCubit extends Cubit<AuthState> {
 
     final result = await _sendPasswordResetEmail(AuthParams(email: email));
 
-    result.fold((failure) => emit(AuthFailed(failure)), (_) {
-      // هنا ممكن تعمل State مخصص للـ reset success
-      // لو محتاج تعرض رسالة في UI.
-    });
+    result.fold(
+      (failure) => emit(AuthFailed(failure)),
+      (_) => emit(const AuthPasswordResetSent()),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -191,7 +190,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   // ---------------------------------------------------------------------------
-  // Temporary stream error mapper
+  // Stream Error Mapper
   // ---------------------------------------------------------------------------
 
   AppFailure _failureFromError(Object error) {

@@ -1,7 +1,10 @@
+import 'package:demix/core/di/auth_di.dart';
+import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:demix/features/auth/presentation/views/forget_password_view.dart';
 import 'package:demix/features/auth/presentation/views/login_view.dart';
 import 'package:demix/features/auth/presentation/views/sign_up_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:demix/generated/l10n.dart';
@@ -45,7 +48,10 @@ class AppRouter {
           path: RoutePaths.login,
           name: 'login',
           builder: (context, state) {
-            return LoginView();
+            return BlocProvider(
+              create: (_) => getIt<AuthCubit>()..initialize(),
+              child: const LoginView(),
+            );
           },
         ),
         GoRoute(
