@@ -11,14 +11,14 @@ import 'package:demix/core/widgets/snack_bar/app_snack_bar_service.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+class SignupView extends StatefulWidget {
+  const SignupView({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignupView> createState() => _SignupViewState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupViewState extends State<SignupView> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
