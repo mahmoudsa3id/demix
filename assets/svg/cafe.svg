@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#6f2cff"/><stop offset="1" stop-color="#a26bff"/></linearGradient></defs>
+<rect width="800" height="420" rx="38" fill="url(#g)"/>
+<circle cx="600" cy="180" r="150" fill="#fff" opacity=".12"/>
+<ellipse cx="575" cy="320" rx="190" ry="30" fill="#25123e" opacity=".35"/>
+<path d="M455 200h190v95q0 30-95 30t-95-30z" fill="#f5eee7"/>
+<ellipse cx="550" cy="200" rx="95" ry="32" fill="#fff"/>
+<ellipse cx="550" cy="205" rx="78" ry="24" fill="#8b5a3c"/>
+<path d="M645 225q75-10 70 45q-5 48-70 35" fill="none" stroke="#f5eee7" stroke-width="20"/>
+<text x="45" y="80" font-family="Arial" font-size="46" font-weight="800" fill="#fff">Cafés</text>
+<text x="45" y="125" font-family="Arial" font-size="25" fill="#fff">Coffee, drinks &amp; desserts</text>
+<circle cx="88" cy="330" r="34" fill="#fff"/><path d="M70 320h38M76 305q12-12 24 0M78 335h24" stroke="#7b2cff" stroke-width="5" fill="none"/>
+</svg>

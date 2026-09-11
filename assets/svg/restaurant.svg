@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#ff6a00"/><stop offset="1" stop-color="#ff9d3d"/></linearGradient></defs>
+<rect width="800" height="420" rx="38" fill="url(#g)"/>
+<circle cx="610" cy="185" r="150" fill="#fff" opacity=".13"/>
+<ellipse cx="570" cy="310" rx="190" ry="32" fill="#7b2f18" opacity=".35"/>
+<path d="M395 245 Q570 190 745 245 L720 295 Q570 265 420 295Z" fill="#62a92e"/>
+<rect x="415" y="225" width="310" height="65" rx="30" fill="#6b321d"/>
+<rect x="425" y="175" width="290" height="60" rx="30" fill="#f5b82e"/>
+<path d="M425 175 Q570 95 715 175Z" fill="#d8873b"/>
+<text x="45" y="80" font-family="Arial" font-size="46" font-weight="800" fill="#fff">Restaurants</text>
+<text x="45" y="125" font-family="Arial" font-size="25" fill="#fff">Meals, fast food &amp; more</text>
+<circle cx="88" cy="330" r="34" fill="#fff"/><path d="M72 312v38M84 312v38M72 330h12M96 312v38" stroke="#ff6a00" stroke-width="5"/>
+</svg>

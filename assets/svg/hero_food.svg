@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#ff6a00"/><stop offset="1" stop-color="#7b2cff"/></linearGradient></defs>
+<rect width="900" height="420" rx="36" fill="#fff7ef"/>
+<circle cx="740" cy="90" r="150" fill="url(#g)" opacity=".18"/>
+<g transform="translate(480 55)">
+<ellipse cx="170" cy="300" rx="230" ry="45" fill="#d8d1cb"/>
+<rect x="0" y="205" width="340" height="45" rx="20" fill="#6b321d"/>
+<rect x="20" y="175" width="300" height="42" rx="20" fill="#f5b82e"/>
+<path d="M25 175 Q170 130 315 175 L300 205 Q170 180 40 205Z" fill="#62a92e"/>
+<rect x="30" y="125" width="280" height="55" rx="28" fill="#6d351e"/>
+<path d="M35 125 Q170 50 305 125Z" fill="#d8873b"/>
+<path d="M75 105 Q170 55 265 105" fill="none" stroke="#f7d7a1" stroke-width="8" stroke-linecap="round" stroke-dasharray="5 18"/>
+</g>
+<text x="55" y="105" font-family="Arial" font-size="54" font-weight="800" fill="#111">Good Food</text>
+<text x="55" y="165" font-family="Arial" font-size="54" font-weight="800" fill="url(#g)">Brighter Days</text>
+</svg>

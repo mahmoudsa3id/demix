@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#fff0df"/><stop offset=".55" stop-color="#fff"/><stop offset="1" stop-color="#efe5ff"/></linearGradient></defs>
+<rect width="1200" height="430" rx="38" fill="url(#g)"/>
+<circle cx="970" cy="120" r="170" fill="#7b2cff" opacity=".10"/>
+<circle cx="1070" cy="320" r="140" fill="#ff6a00" opacity=".13"/>
+<text x="70" y="85" font-family="Arial" font-size="25" letter-spacing="5" fill="#776a61">SPECIAL OFFER</text>
+<text x="70" y="160" font-family="Arial" font-size="62" font-weight="800" fill="#111">Up to <tspan fill="#ff6a00">50%</tspan> OFF</text>
+<text x="70" y="205" font-family="Arial" font-size="27" fill="#444">On selected restaurants &amp; cafés</text>
+<rect x="70" y="250" width="185" height="62" rx="31" fill="#ff6a00"/>
+<text x="105" y="291" font-family="Arial" font-size="23" font-weight="700" fill="#fff">Order Now →</text>
+<g transform="translate(690 70)">
+<ellipse cx="210" cy="270" rx="250" ry="35" fill="#cfc4bb"/>
+<path d="M25 170 Q210 105 395 170 L370 235 Q210 205 50 235Z" fill="#5e9e31"/>
+<rect x="45" y="135" width="330" height="55" rx="27" fill="#f3b52b"/>
+<rect x="60" y="85" width="300" height="55" rx="27" fill="#d8873b"/>
+<path d="M65 88 Q210 5 355 88Z" fill="#e3a25e"/>
+</g>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360">
+<rect width="600" height="360" rx="30" fill="#ffefe4"/>
+<rect x="0" y="0" width="600" height="220" rx="30" fill="#b51e14"/>
+<circle cx="300" cy="115" r="80" fill="#ffd83d"/>
+<path d="M220 145 Q300 105 380 145" stroke="#8b1b13" stroke-width="30" fill="none"/>
+<rect x="245" y="90" width="110" height="65" rx="30" fill="#6d351e"/>
+<text x="30" y="270" font-family="Arial" font-size="30" font-weight="800" fill="#111">Popular Place</text>
+<text x="30" y="310" font-family="Arial" font-size="22" fill="#666">★ 4.8 · 20–30 min</text>
+</svg>
