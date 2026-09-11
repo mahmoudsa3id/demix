@@ -32,3 +32,12 @@ class AppFailure {
     return '$message$suffix';
   }
 }
+
+class AuthFailure extends AppFailure {
+  const AuthFailure({
+    required super.message,
+    super.code,
+    super.cause,
+    super.kind = FailureKind.unauthenticated,
+  });
+}

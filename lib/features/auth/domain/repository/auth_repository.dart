@@ -1,25 +1,31 @@
+import 'package:dartz/dartz.dart';
+
+import 'package:demix/core/errors/app_failure.dart';
 import 'package:demix/features/auth/domain/entities/auth_session.dart';
 
-abstract class AuthRepository {
-  Stream<AuthSession>? get authstateChanges;
-  Future<AuthSession> signInWithEmail({
+abstract interface class AuthRepository {
+  Stream<AuthSession?> get authStateChanges;
+
+  Future<Either<AppFailure, AuthSession>> signInWithEmail({
     required String email,
     required String password,
   });
 
-  Future<AuthSession> signUpWithEmail({
+  Future<Either<AppFailure, AuthSession>> signUpWithEmail({
     required String email,
     required String password,
     required String displayName,
   });
 
-  Future<void> sendPasswordResetEmail({required String email});
+  Future<Either<AppFailure, Unit>> sendPasswordResetEmail({
+    required String email,
+  });
 
-  Future<AuthSession> signInAsGuest();
+  Future<Either<AppFailure, AuthSession>> signInAsGuest();
 
-  Future<AuthSession> signInWithGoogle();
+  Future<Either<AppFailure, AuthSession>> signInWithGoogle();
 
-  Future<AuthSession> signInWithFacebook();
+  Future<Either<AppFailure, AuthSession>> signInWithFacebook();
 
-  Future<void> signOut();
+  Future<Either<AppFailure, Unit>> signOut();
 }
