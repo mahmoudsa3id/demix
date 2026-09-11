@@ -47,28 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBW4tvZuVKXypsYAZjM4G30XRiOGR3QSuc',
-    appId: '1:513958556395:web:246d363844c1a62cdf04ae',
-    messagingSenderId: '513958556395',
-    projectId: 'demix-delivery-app',
-    authDomain: 'demix-delivery-app.firebaseapp.com',
-    storageBucket: 'demix-delivery-app.firebasestorage.app',
+    apiKey: 'AIzaSyCqZmuhQUbVjvTW28pL4Ozabz1jCJ3Nfsg',
+    appId: '1:35052407827:web:e33c0c3dc11a8119d2c3e6',
+    messagingSenderId: '35052407827',
+    projectId: 'demix-eg',
+    authDomain: 'demix-eg.firebaseapp.com',
+    storageBucket: 'demix-eg.firebasestorage.app',
+    measurementId: 'G-VFF6LDTW2L',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAZ5_SLTGGnGSR9Y_w1ZgMx6Vv2jna1x0o',
-    appId: '1:513958556395:android:e0b0e6ce8e496d15df04ae',
-    messagingSenderId: '513958556395',
-    projectId: 'demix-delivery-app',
-    storageBucket: 'demix-delivery-app.firebasestorage.app',
+    apiKey: 'AIzaSyCa30e_FTWCrPVKVdNnLHal8UVSHkeK_fM',
+    appId: '1:35052407827:android:8ea3965bb980415dd2c3e6',
+    messagingSenderId: '35052407827',
+    projectId: 'demix-eg',
+    storageBucket: 'demix-eg.firebasestorage.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBW4tvZuVKXypsYAZjM4G30XRiOGR3QSuc',
-    appId: '1:513958556395:web:3f62e750fad8186cdf04ae',
-    messagingSenderId: '513958556395',
-    projectId: 'demix-delivery-app',
-    authDomain: 'demix-delivery-app.firebaseapp.com',
-    storageBucket: 'demix-delivery-app.firebasestorage.app',
+    apiKey: 'AIzaSyCqZmuhQUbVjvTW28pL4Ozabz1jCJ3Nfsg',
+    appId: '1:35052407827:web:2cf2f00e81e1e404d2c3e6',
+    messagingSenderId: '35052407827',
+    projectId: 'demix-eg',
+    authDomain: 'demix-eg.firebaseapp.com',
+    storageBucket: 'demix-eg.firebasestorage.app',
+    measurementId: 'G-M6CGGVVHFK',
   );
 }
