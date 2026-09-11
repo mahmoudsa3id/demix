@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "35052407827",
-    "project_id": "demix-eg",
-    "storage_bucket": "demix-eg.firebasestorage.app"
+    "project_number": "513958556395",
+    "project_id": "demix-delivery-app",
+    "storage_bucket": "demix-delivery-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:35052407827:android:8ea3965bb980415dd2c3e6",
+        "mobilesdk_app_id": "1:513958556395:android:e0b0e6ce8e496d15df04ae",
         "android_client_info": {
           "package_name": "com.example.new_demix"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCa30e_FTWCrPVKVdNnLHal8UVSHkeK_fM"
+          "current_key": "AIzaSyAZ5_SLTGGnGSR9Y_w1ZgMx6Vv2jna1x0o"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
