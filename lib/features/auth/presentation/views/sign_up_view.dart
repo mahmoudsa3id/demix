@@ -1,5 +1,7 @@
+import 'package:demix/core/errors/firebase_message_solver.dart';
 import 'package:demix/core/routing/navigation.dart';
 import 'package:demix/core/routing/router_names.dart';
+import 'package:demix/core/theme/app_text_styles.dart';
 
 import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:demix/features/auth/presentation/cubit/auth_state.dart';
@@ -50,6 +52,22 @@ class _SignupViewState extends State<SignupView> {
     }
   }
 
+  void _loginWithGoogle() {
+    FocusScope.of(context).unfocus();
+
+    context.read<AuthCubit>().signInWithGoogle();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Facebook
+  // ---------------------------------------------------------------------------
+
+  void _loginWithFacebook() {
+    FocusScope.of(context).unfocus();
+
+    context.read<AuthCubit>().signInWithFacebook();
+  }
+
   void _onConfirmPasswordChanged() {
     if (mounted) {
       setState(() {});
@@ -98,7 +116,12 @@ class _SignupViewState extends State<SignupView> {
         }
 
         if (state is AuthFailed) {
-          AppSnackBarService.instance.error(state.failure.message);
+          final message = FailureMessageResolver.resolve(
+            state.failure,
+            Localizations.localeOf(context).languageCode,
+          );
+
+          AppSnackBarService.instance.error(message);
         }
       },
       child: Scaffold(
@@ -289,10 +312,16 @@ class _SignupViewState extends State<SignupView> {
                         final isLoading = state is AuthLoading;
 
                         return AuthGradientButton(
-                          text: isLoading
-                              ? 'Creating Account...'
-                              : s.signupCreateAccount,
                           onTap: isLoading ? null : _signup,
+                          child: isLoading
+                              ? Center(child: CircularProgressIndicator())
+                              : Text(
+                                  s.signupCreateAccount,
+                                  style: AppTextStyles.cairoBold.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                ),
                         );
                       },
                     ),
@@ -303,8 +332,10 @@ class _SignupViewState extends State<SignupView> {
 
                     const SizedBox(height: 20),
 
-                    const AuthSocialButtons(),
-
+                    AuthSocialButtons(
+                      onGoogleTap: _loginWithGoogle,
+                      onFacebookTap: _loginWithFacebook,
+                    ),
                     const SizedBox(height: 29),
 
                     _loginLink(s),

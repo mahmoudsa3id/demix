@@ -145,6 +145,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginRealFood": MessageLookupByLibrary.simpleMessage("طعام حقيقي"),
     "loginRealPeople": MessageLookupByLibrary.simpleMessage("أشخاص حقيقيون"),
     "loginSignIn": MessageLookupByLibrary.simpleMessage("تسجيل الدخول"),
+    "loginSuccess": MessageLookupByLibrary.simpleMessage(
+      "تم تسجيل الدخول بنجاح ",
+    ),
     "loginTagline": MessageLookupByLibrary.simpleMessage("طعم ألذ لك"),
     "loginWelcome": MessageLookupByLibrary.simpleMessage("مرحبًا"),
     "logout": MessageLookupByLibrary.simpleMessage("تسجيل الخروج"),

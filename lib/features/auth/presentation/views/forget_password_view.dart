@@ -1,5 +1,6 @@
 import 'package:demix/core/routing/navigation.dart';
 import 'package:demix/core/routing/router_names.dart';
+import 'package:demix/core/theme/app_text_styles.dart';
 import 'package:demix/core/widgets/snack_bar/app_snack_bar_service.dart';
 
 import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
@@ -190,8 +191,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         final isLoading = state is AuthLoading;
 
                         return AuthGradientButton(
-                          text: isLoading ? 'Sending...' : s.forgotPasswordSend,
                           onTap: isLoading ? null : _sendResetLink,
+                          child: isLoading
+                              ? Center(child: CircularProgressIndicator())
+                              : Text(
+                                  s.forgotPasswordSend,
+                                  style: AppTextStyles.cairoBold.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                ),
                         );
                       },
                     ),

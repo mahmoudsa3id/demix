@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:demix/features/auth/data/data_source/firbase_auth_remote_source.dart';
-import 'package:demix/features/auth/data/model/auth_model.dart';
-import 'package:demix/features/auth/data/model/firebase_user_mapper.dart';
+import 'package:demix/core/errors/global_firebase_mapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:demix/core/errors/app_failure.dart';
+
+import 'package:demix/features/auth/data/data_source/firbase_auth_remote_source.dart';
+import 'package:demix/features/auth/data/model/auth_model.dart';
+import 'package:demix/features/auth/data/model/firebase_user_mapper.dart';
+
 import 'package:demix/features/auth/domain/entities/auth_session.dart';
 import 'package:demix/features/auth/domain/repository/auth_repository.dart';
 
@@ -18,9 +21,9 @@ class FirebaseAuthRepository implements AuthRepository {
   final FirebaseAuthDataSource _authDataSource;
   final FirebaseFirestore _firestore;
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Auth State
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   @override
   Stream<AuthSession?> get authStateChanges {
@@ -29,15 +32,18 @@ class FirebaseAuthRepository implements AuthRepository {
         return null;
       }
 
-      final model = await _buildAuthModel(user);
-
-      return model.toEntity();
+      try {
+        final model = await _buildAuthModel(user);
+        return model.toEntity();
+      } catch (_) {
+        return null;
+      }
     });
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Email Login
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   @override
   Future<Either<AppFailure, AuthSession>> signInWithEmail({
@@ -54,25 +60,24 @@ class FirebaseAuthRepository implements AuthRepository {
 
       if (user == null) {
         return const Left(
-          AuthFailure(message: 'Unable to retrieve authenticated user.'),
+          AuthFailure(
+            kind: FailureKind.unknown,
+            message: 'auth.authenticationFailed',
+          ),
         );
       }
 
       final model = await _buildAuthModel(user);
 
       return Right(model.toEntity());
-    } on FirebaseAuthException catch (e) {
-      return Left(_mapFirebaseAuthException(e));
-    } on AuthFailure catch (e) {
-      return Left(e);
     } catch (e) {
-      return Left(AuthFailure(message: 'Authentication failed.', cause: e));
+      return Left(FirebaseFailureMapper.map(e));
     }
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Email Register
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   @override
   Future<Either<AppFailure, AuthSession>> signUpWithEmail({
@@ -89,7 +94,12 @@ class FirebaseAuthRepository implements AuthRepository {
       final user = credential.user;
 
       if (user == null) {
-        return const Left(AuthFailure(message: 'Unable to create user.'));
+        return const Left(
+          AuthFailure(
+            kind: FailureKind.unknown,
+            message: 'auth.authenticationFailed',
+          ),
+        );
       }
 
       await _authDataSource.updateDisplayName(displayName: displayName);
@@ -102,23 +112,24 @@ class FirebaseAuthRepository implements AuthRepository {
 
       if (updatedUser == null) {
         return const Left(
-          AuthFailure(message: 'Unable to retrieve created user.'),
+          AuthFailure(
+            kind: FailureKind.unknown,
+            message: 'auth.authenticationFailed',
+          ),
         );
       }
 
       final model = await _buildAuthModel(updatedUser);
 
       return Right(model.toEntity());
-    } on FirebaseAuthException catch (e) {
-      return Left(_mapFirebaseAuthException(e));
     } catch (e) {
-      return Left(AuthFailure(message: 'Registration failed.', cause: e));
+      return Left(FirebaseFailureMapper.map(e));
     }
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Google
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   @override
   Future<Either<AppFailure, AuthSession>> signInWithGoogle() async {
@@ -129,7 +140,10 @@ class FirebaseAuthRepository implements AuthRepository {
 
       if (user == null) {
         return const Left(
-          AuthFailure(message: 'Google authentication failed.'),
+          AuthFailure(
+            kind: FailureKind.unknown,
+            message: 'auth.authenticationFailed',
+          ),
         );
       }
 
@@ -138,20 +152,14 @@ class FirebaseAuthRepository implements AuthRepository {
       final model = await _buildAuthModel(user);
 
       return Right(model.toEntity());
-    } on FirebaseAuthException catch (e) {
-      return Left(_mapFirebaseAuthException(e));
-    } on AuthFailure catch (e) {
-      return Left(e);
     } catch (e) {
-      return Left(
-        AuthFailure(message: 'Google authentication failed.', cause: e),
-      );
+      return Left(FirebaseFailureMapper.map(e));
     }
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Facebook
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   @override
   Future<Either<AppFailure, AuthSession>> signInWithFacebook() async {
@@ -162,7 +170,10 @@ class FirebaseAuthRepository implements AuthRepository {
 
       if (user == null) {
         return const Left(
-          AuthFailure(message: 'Facebook authentication failed.'),
+          AuthFailure(
+            kind: FailureKind.unknown,
+            message: 'auth.authenticationFailed',
+          ),
         );
       }
 
@@ -171,20 +182,14 @@ class FirebaseAuthRepository implements AuthRepository {
       final model = await _buildAuthModel(user);
 
       return Right(model.toEntity());
-    } on FirebaseAuthException catch (e) {
-      return Left(_mapFirebaseAuthException(e));
-    } on AuthFailure catch (e) {
-      return Left(e);
     } catch (e) {
-      return Left(
-        AuthFailure(message: 'Facebook authentication failed.', cause: e),
-      );
+      return Left(FirebaseFailureMapper.map(e));
     }
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Guest
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   @override
   Future<Either<AppFailure, AuthSession>> signInAsGuest() async {
@@ -195,25 +200,24 @@ class FirebaseAuthRepository implements AuthRepository {
 
       if (user == null) {
         return const Left(
-          AuthFailure(message: 'Unable to create guest session.'),
+          AuthFailure(
+            kind: FailureKind.unknown,
+            message: 'auth.authenticationFailed',
+          ),
         );
       }
 
       final model = await _buildAuthModel(user);
 
       return Right(model.toEntity());
-    } on FirebaseAuthException catch (e) {
-      return Left(_mapFirebaseAuthException(e));
     } catch (e) {
-      return Left(
-        AuthFailure(message: 'Guest authentication failed.', cause: e),
-      );
+      return Left(FirebaseFailureMapper.map(e));
     }
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Password Reset
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   @override
   Future<Either<AppFailure, Unit>> sendPasswordResetEmail({
@@ -223,18 +227,14 @@ class FirebaseAuthRepository implements AuthRepository {
       await _authDataSource.sendPasswordResetEmail(email: email);
 
       return const Right(unit);
-    } on FirebaseAuthException catch (e) {
-      return Left(_mapFirebaseAuthException(e));
     } catch (e) {
-      return Left(
-        AuthFailure(message: 'Unable to send password reset email.', cause: e),
-      );
+      return Left(FirebaseFailureMapper.map(e));
     }
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Sign Out
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   @override
   Future<Either<AppFailure, Unit>> signOut() async {
@@ -243,13 +243,13 @@ class FirebaseAuthRepository implements AuthRepository {
 
       return const Right(unit);
     } catch (e) {
-      return Left(AuthFailure(message: 'Unable to sign out.', cause: e));
+      return Left(FirebaseFailureMapper.map(e));
     }
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Build Auth Model
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Future<AuthModel> _buildAuthModel(User user) async {
     final roles = await _getUserRoles(user.uid, user: user);
@@ -257,9 +257,9 @@ class FirebaseAuthRepository implements AuthRepository {
     return FirebaseUserModelMapper.fromFirebaseUser(user, roles: roles);
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Firestore Roles
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Future<Set<UserRole>> _getUserRoles(String uid, {User? user}) async {
     final snapshot = await _firestore.collection('users').doc(uid).get();
@@ -287,9 +287,9 @@ class FirebaseAuthRepository implements AuthRepository {
         .toSet();
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Create Email User
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Future<void> _createUserProfile({
     required User user,
@@ -303,9 +303,9 @@ class FirebaseAuthRepository implements AuthRepository {
     }, SetOptions(merge: true));
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Create Google / Facebook User
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Future<void> _createSocialUserProfile({required User user}) async {
     final reference = _firestore.collection('users').doc(user.uid);
@@ -326,9 +326,9 @@ class FirebaseAuthRepository implements AuthRepository {
     });
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Role Mapper
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   UserRole? _mapRole(String role) {
     switch (role) {
@@ -349,95 +349,6 @@ class FirebaseAuthRepository implements AuthRepository {
 
       default:
         return null;
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Firebase Error Mapper
-  // ---------------------------------------------------------------------------
-
-  AppFailure _mapFirebaseAuthException(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'invalid-email':
-        return AuthFailure(
-          kind: FailureKind.validation,
-          message: 'The email address is invalid.',
-          code: e.code,
-          cause: e,
-        );
-
-      case 'user-not-found':
-        return AuthFailure(
-          kind: FailureKind.notFound,
-          message: 'No account was found with this email.',
-          code: e.code,
-          cause: e,
-        );
-
-      case 'wrong-password':
-      case 'invalid-credential':
-        return AuthFailure(
-          kind: FailureKind.unauthenticated,
-          message: 'Invalid email or password.',
-          code: e.code,
-          cause: e,
-        );
-
-      case 'email-already-in-use':
-        return AuthFailure(
-          kind: FailureKind.validation,
-          message: 'This email is already in use.',
-          code: e.code,
-          cause: e,
-        );
-
-      case 'weak-password':
-        return AuthFailure(
-          kind: FailureKind.validation,
-          message: 'The password is too weak.',
-          code: e.code,
-          cause: e,
-        );
-
-      case 'user-disabled':
-        return AuthFailure(
-          kind: FailureKind.permissionDenied,
-          message: 'This account has been disabled.',
-          code: e.code,
-          cause: e,
-        );
-
-      case 'too-many-requests':
-        return AuthFailure(
-          kind: FailureKind.rateLimited,
-          message: 'Too many requests. Please try again later.',
-          code: e.code,
-          cause: e,
-        );
-
-      case 'network-request-failed':
-        return AuthFailure(
-          kind: FailureKind.network,
-          message: 'Please check your internet connection.',
-          code: e.code,
-          cause: e,
-        );
-
-      case 'operation-not-allowed':
-        return AuthFailure(
-          kind: FailureKind.configuration,
-          message: 'This authentication method is not enabled.',
-          code: e.code,
-          cause: e,
-        );
-
-      default:
-        return AuthFailure(
-          kind: FailureKind.unknown,
-          message: e.message ?? 'Authentication failed.',
-          code: e.code,
-          cause: e,
-        );
     }
   }
 }

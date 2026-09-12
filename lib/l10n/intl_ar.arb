@@ -141,7 +141,7 @@
   "forgotPasswordSend": "إرسال رابط الاستعادة",
   "forgotPasswordBackToLogin": "العودة لتسجيل الدخول",
   "forgotPasswordSuccess": "تم إرسال رابط استعادة كلمة المرور بنجاح",
-
+"loginSuccess":"تم تسجيل الدخول بنجاح ",
 "signupCreate": "إنشاء",
 "signupAccount": "حساب",
 "signupDescription": "أنشئ حسابك وابدأ رحلتك اللذيذة.",

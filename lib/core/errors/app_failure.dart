@@ -20,7 +20,10 @@ class AppFailure {
   });
 
   final FailureKind kind;
+
+  /// Localization key
   final String message;
+
   final String? code;
   final Object? cause;
 

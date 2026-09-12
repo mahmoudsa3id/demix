@@ -870,6 +870,16 @@ class S {
     );
   }
 
+  /// `Login Successfuly`
+  String get loginSuccess {
+    return Intl.message(
+      'Login Successfuly',
+      name: 'loginSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Welcome`
   String get loginWelcome {
     return Intl.message('Welcome', name: 'loginWelcome', desc: '', args: []);
