@@ -115,42 +115,92 @@ class FirebaseAuthDataSource {
   // Facebook
   // ---------------------------------------------------------------------------
 
+  // ---------------------------------------------------------------------------
+  // Facebook
+  // ---------------------------------------------------------------------------
   Future<UserCredential> signInWithFacebook() async {
-    final result = await _facebookAuth.login();
+    try {
+      print('🟦 FACEBOOK LOGIN: START');
 
-    if (result.status == LoginStatus.cancelled) {
-      throw const AuthFailure(
-        kind: FailureKind.cancelled,
-        message: 'Facebook login was cancelled.',
-        code: 'facebook-login-cancelled',
+      final result = await _facebookAuth.login(
+        permissions: const ['email', 'public_profile'],
       );
-    }
 
-    if (result.status != LoginStatus.success) {
-      throw AuthFailure(
-        message: result.message ?? 'Facebook login failed.',
-        code: 'facebook-login-failed',
+      print('🟦 FACEBOOK STATUS: ${result.status}');
+      print('🟦 FACEBOOK MESSAGE: ${result.message}');
+      print('🟦 FACEBOOK ACCESS TOKEN: ${result.accessToken}');
+
+      if (result.status == LoginStatus.cancelled) {
+        print('🟡 FACEBOOK LOGIN CANCELLED');
+
+        throw FirebaseAuthException(code: 'cancelled', message: result.message);
+      }
+
+      if (result.status != LoginStatus.success) {
+        print('🔴 FACEBOOK LOGIN FAILED');
+        print('🔴 STATUS: ${result.status}');
+        print('🔴 MESSAGE: ${result.message}');
+
+        throw FirebaseAuthException(
+          code: 'authentication-failed',
+          message: result.message,
+        );
+      }
+
+      final accessToken = result.accessToken;
+
+      if (accessToken == null) {
+        print('🔴 FACEBOOK ACCESS TOKEN IS NULL');
+
+        throw FirebaseAuthException(
+          code: 'invalid-credential',
+          message: 'Facebook access token is missing.',
+        );
+      }
+
+      print('🟢 FACEBOOK ACCESS TOKEN RECEIVED');
+      print('🟢 TOKEN TYPE: ${accessToken.type}');
+      print('🟢 TOKEN STRING: ${accessToken.tokenString}');
+
+      final credential = FacebookAuthProvider.credential(
+        accessToken.tokenString,
       );
-    }
 
-    final accessToken = result.accessToken;
+      print('🟦 FACEBOOK FIREBASE CREDENTIAL CREATED');
 
-    if (accessToken == null) {
-      throw const AuthFailure(
-        message: 'Facebook access token is missing.',
-        code: 'facebook-missing-access-token',
+      final userCredential = await _firebaseAuth.signInWithCredential(
+        credential,
       );
+
+      print('🟢 FIREBASE FACEBOOK LOGIN SUCCESS');
+      print('🟢 USER UID: ${userCredential.user?.uid}');
+      print('🟢 USER EMAIL: ${userCredential.user?.email}');
+      print('🟢 USER NAME: ${userCredential.user?.displayName}');
+
+      return userCredential;
+    } catch (e, stackTrace) {
+      print('════════════════════════════════════════');
+      print('🔴 FACEBOOK LOGIN EXCEPTION');
+      print('🔴 ERROR TYPE: ${e.runtimeType}');
+      print('🔴 ERROR: $e');
+
+      if (e is FirebaseAuthException) {
+        print('🔴 FIREBASE CODE: ${e.code}');
+        print('🔴 FIREBASE MESSAGE: ${e.message}');
+        print('🔴 FIREBASE PLUGIN: ${e.plugin}');
+      }
+
+      print('🔴 STACK TRACE:');
+      print(stackTrace);
+      print('════════════════════════════════════════');
+
+      rethrow;
     }
-
-    final credential = FacebookAuthProvider.credential(accessToken.tokenString);
-
-    return _firebaseAuth.signInWithCredential(credential);
   }
 
   Future<void> signOutFacebook() async {
     await _facebookAuth.logOut();
   }
-
   // ---------------------------------------------------------------------------
   // Firebase Credential
   // ---------------------------------------------------------------------------
