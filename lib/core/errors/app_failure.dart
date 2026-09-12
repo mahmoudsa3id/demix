@@ -20,7 +20,10 @@ class AppFailure {
   });
 
   final FailureKind kind;
+
+  /// Localization key
   final String message;
+
   final String? code;
   final Object? cause;
 
@@ -31,4 +34,13 @@ class AppFailure {
     final suffix = code == null ? '' : ' ($code)';
     return '$message$suffix';
   }
+}
+
+class AuthFailure extends AppFailure {
+  const AuthFailure({
+    required super.message,
+    super.code,
+    super.cause,
+    super.kind = FailureKind.unauthenticated,
+  });
 }

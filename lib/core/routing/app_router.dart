@@ -45,14 +45,15 @@ class AppRouter {
           path: RoutePaths.login,
           name: 'login',
           builder: (context, state) {
-            return LoginPage();
+            return const LoginView();
           },
         ),
+
         GoRoute(
           path: RoutePaths.signup,
           name: 'signup',
           builder: (context, state) {
-            return SignupPage();
+            return SignupView();
           },
         ),
         GoRoute(

@@ -1,26 +1,147 @@
 {
   "project_info": {
-    "project_number": "513958556395",
-    "project_id": "demix-delivery-app",
-    "storage_bucket": "demix-delivery-app.firebasestorage.app"
+    "project_number": "35052407827",
+    "project_id": "demix-eg",
+    "storage_bucket": "demix-eg.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:513958556395:android:e0b0e6ce8e496d15df04ae",
+        "mobilesdk_app_id": "1:35052407827:android:485a65d0cd26453bd2c3e6",
         "android_client_info": {
-          "package_name": "com.example.new_demix"
+          "package_name": "com.demix.admin"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "35052407827-tm4n4ub59mrohc94tpmmds2b7gsfvdgr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.demix.admin",
+            "certificate_hash": "2a0b22692bba709da76ba7ed855d4744c610e528"
+          }
+        },
+        {
+          "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAZ5_SLTGGnGSR9Y_w1ZgMx6Vv2jna1x0o"
+          "current_key": "AIzaSyCa30e_FTWCrPVKVdNnLHal8UVSHkeK_fM"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35052407827:android:5621d08f6eff969ed2c3e6",
+        "android_client_info": {
+          "package_name": "com.demix.business"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "35052407827-3lbjeq6noue218h3tqqsl3m4b79dno88.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.demix.business",
+            "certificate_hash": "2a0b22692bba709da76ba7ed855d4744c610e528"
+          }
+        },
+        {
+          "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa30e_FTWCrPVKVdNnLHal8UVSHkeK_fM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35052407827:android:62c08b7106f1f8a3d2c3e6",
+        "android_client_info": {
+          "package_name": "com.demix.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "35052407827-s8g4q5gujoknqcfju830q15qpnht8dii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.demix.customer",
+            "certificate_hash": "2a0b22692bba709da76ba7ed855d4744c610e528"
+          }
+        },
+        {
+          "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa30e_FTWCrPVKVdNnLHal8UVSHkeK_fM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35052407827:android:8ea3965bb980415dd2c3e6",
+        "android_client_info": {
+          "package_name": "com.example.new_demix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa30e_FTWCrPVKVdNnLHal8UVSHkeK_fM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "35052407827-j5pod4d3b8k40je97334384e1p9iegin.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

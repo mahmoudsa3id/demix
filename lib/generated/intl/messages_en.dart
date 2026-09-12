@@ -151,6 +151,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginRealFood": MessageLookupByLibrary.simpleMessage("REAL FOOD"),
     "loginRealPeople": MessageLookupByLibrary.simpleMessage("REAL PEOPLE"),
     "loginSignIn": MessageLookupByLibrary.simpleMessage("Sign In"),
+    "loginSuccess": MessageLookupByLibrary.simpleMessage("Login Successfuly"),
     "loginTagline": MessageLookupByLibrary.simpleMessage(
       "A  T A S T I E R  Y O U",
     ),

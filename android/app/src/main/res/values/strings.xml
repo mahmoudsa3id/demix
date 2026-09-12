@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">new_demix</string>
+
+    <string name="facebook_app_id">1033722209663224</string>
+
+    <string name="fb_login_protocol_scheme">fb1033722209663224</string>
+
+    <string name="facebook_client_token">c458167a4953f35b860bf02e343303a8</string>
+
+</resources>

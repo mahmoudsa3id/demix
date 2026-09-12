@@ -108,6 +108,7 @@
   "currency": "EGP",
    "loginNeedHelp": "Need help?",
   "loginTagline": "A  T A S T I E R  Y O U",
+  "loginSuccess":"Login Successfuly",
   "loginWelcome": "Welcome",
   "loginBack": "Back",
   "loginDescription": "Sign in to continue your delicious journey.",

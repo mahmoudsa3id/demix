@@ -29,3 +29,11 @@ class AuthSession {
 
   bool get isCustomer => roles.contains(UserRole.customer);
 }
+
+class AuthParams {
+  const AuthParams({this.email, this.password, this.displayName});
+
+  final String? email;
+  final String? password;
+  final String? displayName;
+}

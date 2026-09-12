@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AuthGradientButton extends StatelessWidget {
-  final String text;
   final VoidCallback? onTap;
+  final Widget child;
 
   const AuthGradientButton({
     super.key,
-    required this.text,
     required this.onTap,
+    required this.child,
   });
 
   @override
@@ -31,14 +31,7 @@ class AuthGradientButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Center(child: child),
               const SizedBox(width: 17),
               const Icon(
                 Icons.arrow_forward_rounded,

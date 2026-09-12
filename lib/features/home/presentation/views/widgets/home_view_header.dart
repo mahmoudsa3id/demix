@@ -1,11 +1,15 @@
 import 'dart:ui';
 
 import 'package:demix/core/localization/locale_controller.dart';
+import 'package:demix/core/routing/navigation.dart';
+import 'package:demix/core/routing/router_names.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/utils/helper/helper_widgets.dart';
+import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:demix/features/home/presentation/views/widgets/demix_logo.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeViewHeader extends StatelessWidget {
   const HomeViewHeader({super.key, required this.s});
@@ -73,18 +77,27 @@ class HomeViewHeader extends StatelessWidget {
             ],
           ),
           const SizedBox(width: 5),
-          Container(
-            width: 40,
-            height: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.white,
-              border: Border.all(color: AppColors.border),
-            ),
-            child: const Text(
-              'MS',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+          GestureDetector(
+            onTap: () async {
+              await context.read<AuthCubit>().signOut();
+
+              if (!context.mounted) return;
+
+              popOrGo(context, fallback: RoutePaths.login);
+            },
+            child: Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.white,
+                border: Border.all(color: AppColors.border),
+              ),
+              child: const Text(
+                'MS',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+              ),
             ),
           ),
         ],
