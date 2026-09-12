@@ -73,7 +73,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
       if (status == AnimationStatus.completed) {
         if (!mounted) return;
 
-        context.go(RoutePaths.login);
+        context.go(RoutePaths.onboarding);
       }
     });
 

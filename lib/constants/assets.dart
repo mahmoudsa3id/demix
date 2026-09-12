@@ -34,9 +34,21 @@ class Assets {
   /// assets/fonts/Cairo-SemiBold.ttf
   static const String assetsFontsCairoSemiBold = "assets/fonts/Cairo-SemiBold.ttf";
 
+  /// Assets for assetsSvgDeliveryRider
+  /// assets/svg/delivery_rider.svg
+  static const String assetsSvgDeliveryRider = "assets/svg/delivery_rider.svg";
+
   /// Assets for assetsSvgDemixSplash
   /// assets/svg/demix_splash.svg
   static const String assetsSvgDemixSplash = "assets/svg/demix_splash.svg";
+
+  /// Assets for assetsSvgDrinks
+  /// assets/svg/drinks.svg
+  static const String assetsSvgDrinks = "assets/svg/drinks.svg";
+
+  /// Assets for assetsSvgFood
+  /// assets/svg/food.svg
+  static const String assetsSvgFood = "assets/svg/food.svg";
 
   /// Assets for assetsSvgGoogleLogo
   /// assets/svg/google_logo.svg

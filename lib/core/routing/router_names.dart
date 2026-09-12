@@ -1,5 +1,6 @@
 abstract class RoutePaths {
   static const splash = '/';
+  static const onboarding = '/onboarding';
   static const forgotPassword = '/forget-passowrd';
   static const signup = '/signup';
   static const home = '/home';
