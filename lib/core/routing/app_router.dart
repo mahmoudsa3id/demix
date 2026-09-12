@@ -48,12 +48,10 @@ class AppRouter {
           path: RoutePaths.login,
           name: 'login',
           builder: (context, state) {
-            return BlocProvider(
-              create: (_) => getIt<AuthCubit>()..initialize(),
-              child: const LoginView(),
-            );
+            return const LoginView();
           },
         ),
+
         GoRoute(
           path: RoutePaths.signup,
           name: 'signup',
