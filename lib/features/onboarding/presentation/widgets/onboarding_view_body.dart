@@ -54,11 +54,7 @@ class _OnboardingViewBodyState extends State<OnboardingViewBody>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      final locale = SharedPreference.getLanguage;
-
-      if (locale.isEmpty) {
-        _showLanguageDialog();
-      }
+      _showLanguageDialog();
     });
   }
 
