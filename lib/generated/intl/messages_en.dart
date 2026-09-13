@@ -184,6 +184,30 @@ class MessageLookup extends MessageLookupByLibrary {
     "offerDescription": MessageLookupByLibrary.simpleMessage(
       "Enjoy special offers from your favorite places",
     ),
+    "onboardingChooseLanguage": MessageLookupByLibrary.simpleMessage(
+      "Choose your preferred language",
+    ),
+    "onboardingContinue": MessageLookupByLibrary.simpleMessage("Continue"),
+    "onboardingDeliveryDescription": MessageLookupByLibrary.simpleMessage(
+      "Hot. Fresh. Right on time.",
+    ),
+    "onboardingDeliveryTitle": MessageLookupByLibrary.simpleMessage(
+      "On the way to you.",
+    ),
+    "onboardingDrinksDescription": MessageLookupByLibrary.simpleMessage(
+      "Something refreshing is always a good idea.",
+    ),
+    "onboardingDrinksTitle": MessageLookupByLibrary.simpleMessage(
+      "Sip your mood.",
+    ),
+    "onboardingFoodDescription": MessageLookupByLibrary.simpleMessage(
+      "Big flavors. Zero compromises.",
+    ),
+    "onboardingFoodTitle": MessageLookupByLibrary.simpleMessage(
+      "Made for your cravings.",
+    ),
+    "onboardingGetStarted": MessageLookupByLibrary.simpleMessage("Get Started"),
+    "onboardingSkip": MessageLookupByLibrary.simpleMessage("Skip"),
     "orderDetails": MessageLookupByLibrary.simpleMessage("Details"),
     "orderNow": MessageLookupByLibrary.simpleMessage("Order Now"),
     "orderStatusAccepted": MessageLookupByLibrary.simpleMessage("Accepted"),

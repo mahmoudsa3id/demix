@@ -1,6 +1,8 @@
 import 'package:demix/constants/assets.dart';
+import 'package:demix/core/db/shared_preferance.dart';
 import 'package:demix/core/routing/router_names.dart';
 import 'package:demix/features/splash/presentation/views/widgets/splash_progress_pointer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +17,8 @@ class SplashViewBody extends StatefulWidget {
 class _SplashViewBodyState extends State<SplashViewBody>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-
+  final isSeen = SharedPreference.getOnboarding;
+  final user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     super.initState();
@@ -72,8 +75,13 @@ class _SplashViewBodyState extends State<SplashViewBody>
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         if (!mounted) return;
-
-        context.go(RoutePaths.onboarding);
+        if (!isSeen) {
+          context.go(RoutePaths.onboarding);
+        } else if (user != null) {
+          context.go(RoutePaths.home);
+        } else {
+          context.go(RoutePaths.login);
+        }
       }
     });
 

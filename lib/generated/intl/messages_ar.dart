@@ -182,6 +182,28 @@ class MessageLookup extends MessageLookupByLibrary {
     "offerDescription": MessageLookupByLibrary.simpleMessage(
       "استمتع بأفضل العروض من أماكنك المفضلة",
     ),
+    "onboardingChooseLanguage": MessageLookupByLibrary.simpleMessage(
+      "اختر اللغة المفضلة لديك",
+    ),
+    "onboardingContinue": MessageLookupByLibrary.simpleMessage("متابعة"),
+    "onboardingDeliveryDescription": MessageLookupByLibrary.simpleMessage(
+      "سخن. طازج. وفي معاده.",
+    ),
+    "onboardingDeliveryTitle": MessageLookupByLibrary.simpleMessage(
+      "في طريقه إليك",
+    ),
+    "onboardingDrinksDescription": MessageLookupByLibrary.simpleMessage(
+      "الحلو يعني دوميكس",
+    ),
+    "onboardingDrinksTitle": MessageLookupByLibrary.simpleMessage("اشرب مزاجك"),
+    "onboardingFoodDescription": MessageLookupByLibrary.simpleMessage(
+      "السرعة يعني دوميكس",
+    ),
+    "onboardingFoodTitle": MessageLookupByLibrary.simpleMessage(
+      "أكلك عندك فلحظة",
+    ),
+    "onboardingGetStarted": MessageLookupByLibrary.simpleMessage("ابدأ الآن"),
+    "onboardingSkip": MessageLookupByLibrary.simpleMessage("تخطي"),
     "orderDetails": MessageLookupByLibrary.simpleMessage("التفاصيل"),
     "orderNow": MessageLookupByLibrary.simpleMessage("اطلب الآن"),
     "orderStatusAccepted": MessageLookupByLibrary.simpleMessage(

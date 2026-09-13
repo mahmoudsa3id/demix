@@ -136,6 +136,21 @@
   "loginRealPeople": "أشخاص حقيقيون",
   "loginHappierDays": "أيام أكثر سعادة",
     "forgotPasswordTitle": "نسيت",
+    
+  "onboardingSkip": "تخطي",
+  "onboardingContinue": "متابعة",
+  "onboardingGetStarted": "ابدأ الآن",
+  "onboardingChooseLanguage": "اختر اللغة المفضلة لديك",
+
+  "onboardingFoodTitle": "أكلك عندك فلحظة",
+  "onboardingFoodDescription": "السرعة يعني دوميكس",
+
+  "onboardingDrinksTitle": "اشرب مزاجك",
+  "onboardingDrinksDescription": "الحلو يعني دوميكس",
+
+  "onboardingDeliveryTitle": "في طريقه إليك",
+  "onboardingDeliveryDescription": "سخن. طازج. وفي معاده."
+,
   "forgotPasswordHighlight": "كلمة المرور؟",
   "forgotPasswordDescription": "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.",
   "forgotPasswordSend": "إرسال رابط الاستعادة",

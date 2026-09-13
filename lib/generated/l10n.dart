@@ -885,6 +885,101 @@ class S {
     return Intl.message('Welcome', name: 'loginWelcome', desc: '', args: []);
   }
 
+  /// `Skip`
+  String get onboardingSkip {
+    return Intl.message('Skip', name: 'onboardingSkip', desc: '', args: []);
+  }
+
+  /// `Continue`
+  String get onboardingContinue {
+    return Intl.message(
+      'Continue',
+      name: 'onboardingContinue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get Started`
+  String get onboardingGetStarted {
+    return Intl.message(
+      'Get Started',
+      name: 'onboardingGetStarted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose your preferred language`
+  String get onboardingChooseLanguage {
+    return Intl.message(
+      'Choose your preferred language',
+      name: 'onboardingChooseLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Made for your cravings.`
+  String get onboardingFoodTitle {
+    return Intl.message(
+      'Made for your cravings.',
+      name: 'onboardingFoodTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Big flavors. Zero compromises.`
+  String get onboardingFoodDescription {
+    return Intl.message(
+      'Big flavors. Zero compromises.',
+      name: 'onboardingFoodDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sip your mood.`
+  String get onboardingDrinksTitle {
+    return Intl.message(
+      'Sip your mood.',
+      name: 'onboardingDrinksTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Something refreshing is always a good idea.`
+  String get onboardingDrinksDescription {
+    return Intl.message(
+      'Something refreshing is always a good idea.',
+      name: 'onboardingDrinksDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `On the way to you.`
+  String get onboardingDeliveryTitle {
+    return Intl.message(
+      'On the way to you.',
+      name: 'onboardingDeliveryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hot. Fresh. Right on time.`
+  String get onboardingDeliveryDescription {
+    return Intl.message(
+      'Hot. Fresh. Right on time.',
+      name: 'onboardingDeliveryDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Back`
   String get loginBack {
     return Intl.message('Back', name: 'loginBack', desc: '', args: []);

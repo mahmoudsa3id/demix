@@ -1,3 +1,4 @@
+import 'package:demix/core/db/shared_preferance.dart';
 import 'package:demix/core/di/auth_di.dart';
 import 'package:demix/core/widgets/snack_bar/app_snack_bar_service.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,9 @@ import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreference.init();
 
   // ------------------------------------------------------------
-  // Firebase
-  // ------------------------------------------------------------
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // ------------------------------------------------------------

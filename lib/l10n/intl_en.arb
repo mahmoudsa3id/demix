@@ -109,7 +109,20 @@
    "loginNeedHelp": "Need help?",
   "loginTagline": "A  T A S T I E R  Y O U",
   "loginSuccess":"Login Successfuly",
-  "loginWelcome": "Welcome",
+  "loginWelcome": "Welcome",  "onboardingSkip": "Skip",
+  "onboardingContinue": "Continue",
+  "onboardingGetStarted": "Get Started",
+  "onboardingChooseLanguage": "Choose your preferred language",
+
+  "onboardingFoodTitle": "Made for your cravings.",
+  "onboardingFoodDescription": "Big flavors. Zero compromises.",
+
+  "onboardingDrinksTitle": "Sip your mood.",
+  "onboardingDrinksDescription": "Something refreshing is always a good idea.",
+
+  "onboardingDeliveryTitle": "On the way to you.",
+  "onboardingDeliveryDescription": "Hot. Fresh. Right on time."
+,
   "loginBack": "Back",
   "loginDescription": "Sign in to continue your delicious journey.",
   "loginEmailOrPhone": "Email or Phone Number",
