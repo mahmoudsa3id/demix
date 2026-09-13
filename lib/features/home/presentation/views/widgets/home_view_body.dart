@@ -7,8 +7,11 @@ import 'package:demix/features/home/presentation/views/widgets/home_view_search.
 import 'package:demix/features/home/presentation/views/widgets/offer_item.dart';
 import 'package:demix/features/home/presentation/views/widgets/product_card_list.dart';
 import 'package:demix/features/home/presentation/views/widgets/resturant_card_list.dart';
+import 'package:demix/features/location/core/di/location_di.dart';
+import 'package:demix/features/location/presentation/cubit/saved_location_cubit.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeViewBody extends StatelessWidget {
   const HomeViewBody({super.key});
@@ -28,7 +31,10 @@ class HomeViewBody extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 8),
-                HomeViewHeader(s: s),
+                BlocProvider(
+                  create: (_) => getIt<SavedLocationCubit>()..load(),
+                  child: HomeViewHeader(s: s),
+                ),
                 const SizedBox(height: 12),
                 hero(s),
                 const SizedBox(height: 10),

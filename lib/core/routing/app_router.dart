@@ -1,8 +1,12 @@
 import 'package:demix/features/auth/presentation/views/forget_password_view.dart';
 import 'package:demix/features/auth/presentation/views/login_view.dart';
 import 'package:demix/features/auth/presentation/views/sign_up_view.dart';
+import 'package:demix/features/location/core/di/location_di.dart';
+import 'package:demix/features/location/presentation/cubit/location_cubit.dart';
+import 'package:demix/features/location/presentation/pages/location_page.dart';
 import 'package:demix/features/onboarding/presentation/onboarding_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:demix/generated/l10n.dart';
@@ -40,6 +44,22 @@ class AppRouter {
           name: 'splash',
           builder: (context, state) {
             return const SplashView();
+          },
+        ),
+        GoRoute(
+          path: RoutePaths.location,
+          name: 'location',
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => getIt<LocationCubit>()..initialize(),
+              child: LocationPage(
+                onConfirmed: () async {
+                  if (!context.mounted) return;
+
+                  context.go(RoutePaths.home);
+                },
+              ),
+            );
           },
         ),
         GoRoute(

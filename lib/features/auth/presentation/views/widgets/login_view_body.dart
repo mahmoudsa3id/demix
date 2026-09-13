@@ -98,7 +98,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
-          popOrGo(context, fallback: RoutePaths.home);
+          popOrGo(context, fallback: RoutePaths.location);
 
           AppSnackBarService.instance.success(s.loginSuccess);
 
