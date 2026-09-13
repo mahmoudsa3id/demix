@@ -38,12 +38,33 @@ class LocationReady extends LocationState {
   final String? notice;
   final bool saving;
 
-  bool get canConfirm =>
-      insideZone &&
-      !addressLoading &&
-      !zoneChecking &&
-      !saving &&
-      address != null;
+  bool get canConfirm {
+    if (insideZone != true) {
+      return false;
+    }
+
+    if (addressLoading || zoneChecking || saving) {
+      return false;
+    }
+
+    if (address == null) {
+      return false;
+    }
+
+    final street = address!.street;
+
+    if (street == null || street.trim().isEmpty) {
+      return false;
+    }
+
+    final formattedAddress = address!.formattedAddress;
+
+    if (formattedAddress == null || formattedAddress.trim().isEmpty) {
+      return false;
+    }
+
+    return true;
+  }
 
   LocationReady copyWith({
     LocationCoordinate? deviceLocation,

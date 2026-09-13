@@ -22,11 +22,11 @@ class LocationRepositoryImpl implements LocationRepository {
     required LocationLocalDataSource local,
     required LocationFirestoreDataSource remote,
     required ServiceZoneChecker zoneChecker,
-  })  : _device = device,
-        _geocoding = geocoding,
-        _local = local,
-        _remote = remote,
-        _zoneChecker = zoneChecker;
+  }) : _device = device,
+       _geocoding = geocoding,
+       _local = local,
+       _remote = remote,
+       _zoneChecker = zoneChecker;
 
   final LocationDeviceDataSource _device;
   final NominatimGeocodingDataSource _geocoding;
@@ -36,7 +36,7 @@ class LocationRepositoryImpl implements LocationRepository {
 
   @override
   Future<Either<LocationFailure, LocationCoordinate>>
-      getCurrentDeviceLocation() async {
+  getCurrentDeviceLocation() async {
     try {
       final position = await _device.getCurrentPosition();
       return Right(
@@ -46,35 +46,45 @@ class LocationRepositoryImpl implements LocationRepository {
         ),
       );
     } on LocationServiceDisabledException catch (e) {
-      return Left(_failure(
-        LocationFailureKind.serviceDisabled,
-        'Location services are disabled.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.serviceDisabled,
+          'Location services are disabled.',
+          e,
+        ),
+      );
     } on PermissionDeniedForeverException catch (e) {
-      return Left(_failure(
-        LocationFailureKind.permissionDeniedForever,
-        'Location permission is permanently denied.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.permissionDeniedForever,
+          'Location permission is permanently denied.',
+          e,
+        ),
+      );
     } on PermissionDeniedException catch (e) {
-      return Left(_failure(
-        LocationFailureKind.permissionDenied,
-        'Location permission was denied.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.permissionDenied,
+          'Location permission was denied.',
+          e,
+        ),
+      );
     } on LocationGpsException catch (e) {
-      return Left(_failure(
-        LocationFailureKind.gps,
-        'Unable to read the GPS location.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.gps,
+          'Unable to read the GPS location.',
+          e,
+        ),
+      );
     } catch (e) {
-      return Left(_failure(
-        LocationFailureKind.unknown,
-        'Unable to get your current location.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.unknown,
+          'Unable to get your current location.',
+          e,
+        ),
+      );
     }
   }
 
@@ -83,25 +93,41 @@ class LocationRepositoryImpl implements LocationRepository {
     LocationCoordinate coordinate,
   ) async {
     try {
-      return Right(await _geocoding.reverse(coordinate));
+      final location = await _geocoding.reverse(coordinate);
+
+      return Right(location);
+    } on NoStreetAddressException catch (e) {
+      return Left(
+        _failure(
+          LocationFailureKind.geocoding,
+          'لم يتم العثور على شارع واضح في هذا المكان.',
+          e,
+        ),
+      );
     } on TimeoutException catch (e) {
-      return Left(_failure(
-        LocationFailureKind.network,
-        'Reverse geocoding timed out.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.network,
+          'Reverse geocoding timed out.',
+          e,
+        ),
+      );
     } on NominatimException catch (e) {
-      return Left(_failure(
-        LocationFailureKind.geocoding,
-        'Unable to determine the address.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.geocoding,
+          'Unable to determine the address.',
+          e,
+        ),
+      );
     } catch (e) {
-      return Left(_failure(
-        LocationFailureKind.geocoding,
-        'Unable to determine the address.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.geocoding,
+          'Unable to determine the address.',
+          e,
+        ),
+      );
     }
   }
 
@@ -112,11 +138,13 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       return Right(await _zoneChecker.check(coordinate));
     } catch (e) {
-      return Left(_failure(
-        LocationFailureKind.validation,
-        'Unable to check service availability.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.validation,
+          'Unable to check service availability.',
+          e,
+        ),
+      );
     }
   }
 
@@ -125,10 +153,12 @@ class LocationRepositoryImpl implements LocationRepository {
     LocationEntity location,
   ) async {
     if (!location.isInsideZone) {
-      return const Left(LocationFailure(
-        kind: LocationFailureKind.validation,
-        message: 'Only locations inside the service zone can be saved.',
-      ));
+      return const Left(
+        LocationFailure(
+          kind: LocationFailureKind.validation,
+          message: 'Only locations inside the service zone can be saved.',
+        ),
+      );
     }
 
     final now = DateTime.now();
@@ -143,11 +173,13 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       await _local.create(model);
     } catch (e) {
-      return Left(_failure(
-        LocationFailureKind.database,
-        'Unable to save your location locally.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.database,
+          'Unable to save your location locally.',
+          e,
+        ),
+      );
     }
 
     try {
@@ -155,21 +187,25 @@ class LocationRepositoryImpl implements LocationRepository {
       return Right(model);
     } on LocationUnauthenticatedException catch (e) {
       await _safeDeleteLocal();
-      return Left(_failure(
-        LocationFailureKind.unauthenticated,
-        'You must be signed in to save a location.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.unauthenticated,
+          'You must be signed in to save a location.',
+          e,
+        ),
+      );
     } on FirebaseException catch (e) {
       await _safeDeleteLocal();
       return Left(_mapFirebaseFailure(e));
     } catch (e) {
       await _safeDeleteLocal();
-      return Left(_failure(
-        LocationFailureKind.network,
-        'Unable to save your location remotely.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.network,
+          'Unable to save your location remotely.',
+          e,
+        ),
+      );
     }
   }
 
@@ -178,11 +214,13 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       return Right(await _local.readCurrent());
     } catch (e) {
-      return Left(_failure(
-        LocationFailureKind.database,
-        'Unable to read your saved location.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.database,
+          'Unable to read your saved location.',
+          e,
+        ),
+      );
     }
   }
 
@@ -191,17 +229,16 @@ class LocationRepositoryImpl implements LocationRepository {
     LocationEntity location,
   ) async {
     if (!location.isInsideZone) {
-      return const Left(LocationFailure(
-        kind: LocationFailureKind.validation,
-        message: 'Only locations inside the service zone can be saved.',
-      ));
+      return const Left(
+        LocationFailure(
+          kind: LocationFailureKind.validation,
+          message: 'Only locations inside the service zone can be saved.',
+        ),
+      );
     }
 
     final model = LocationModel.fromEntity(
-      location.copyWith(
-        id: 1,
-        updatedAt: DateTime.now(),
-      ),
+      location.copyWith(id: 1, updatedAt: DateTime.now()),
     );
 
     try {
@@ -209,19 +246,23 @@ class LocationRepositoryImpl implements LocationRepository {
       await _remote.updateCurrent(model);
       return const Right(unit);
     } on LocationUnauthenticatedException catch (e) {
-      return Left(_failure(
-        LocationFailureKind.unauthenticated,
-        'You must be signed in to update a location.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.unauthenticated,
+          'You must be signed in to update a location.',
+          e,
+        ),
+      );
     } on FirebaseException catch (e) {
       return Left(_mapFirebaseFailure(e));
     } catch (e) {
-      return Left(_failure(
-        LocationFailureKind.database,
-        'Unable to update your location.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.database,
+          'Unable to update your location.',
+          e,
+        ),
+      );
     }
   }
 
@@ -232,19 +273,23 @@ class LocationRepositoryImpl implements LocationRepository {
       await _remote.deleteCurrent();
       return const Right(unit);
     } on LocationUnauthenticatedException catch (e) {
-      return Left(_failure(
-        LocationFailureKind.unauthenticated,
-        'You must be signed in to delete your location.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.unauthenticated,
+          'You must be signed in to delete your location.',
+          e,
+        ),
+      );
     } on FirebaseException catch (e) {
       return Left(_mapFirebaseFailure(e));
     } catch (e) {
-      return Left(_failure(
-        LocationFailureKind.database,
-        'Unable to delete your location.',
-        e,
-      ));
+      return Left(
+        _failure(
+          LocationFailureKind.database,
+          'Unable to delete your location.',
+          e,
+        ),
+      );
     }
   }
 
