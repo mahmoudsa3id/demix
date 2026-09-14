@@ -1,4 +1,4 @@
-export 'core/di/location_di.dart';
+export '../../core/di/location_di.dart';
 export 'core/errors/location_failure.dart';
 export 'data/datasources/zone/kafr_el_dawar_zones.dart';
 export 'data/datasources/zone/local_service_zone_checker.dart';

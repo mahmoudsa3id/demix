@@ -6,10 +6,10 @@ import 'package:demix/features/home/presentation/views/widgets/home_view_hero.da
 import 'package:demix/features/home/presentation/views/widgets/home_view_search.dart';
 import 'package:demix/features/home/presentation/views/widgets/offer_item.dart';
 import 'package:demix/features/home/presentation/views/widgets/product_card_list.dart';
-import 'package:demix/features/home/presentation/views/widgets/resturant_card_list.dart';
-import 'package:demix/features/location/core/di/location_di.dart';
+import 'package:demix/features/home/presentation/views/widgets/business_card_list.dart';
 import 'package:demix/features/location/presentation/cubit/saved_location_cubit.dart';
 import 'package:demix/generated/l10n.dart';
+import 'package:demix/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -40,7 +40,9 @@ class HomeViewBody extends StatelessWidget {
                 const SizedBox(height: 10),
                 search(s),
                 const SizedBox(height: 10),
-                homeViewCatogories(s),
+
+                const SizedBox(height: 10),
+                homeViewCatogories(context, s),
                 const SizedBox(height: 9),
                 offerItem(s),
                 const SizedBox(height: 10),

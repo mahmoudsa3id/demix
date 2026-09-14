@@ -196,9 +196,6 @@ class _OnboardingViewBodyState extends State<OnboardingViewBody>
             ),
           ),
 
-          // ======================================================
-          // Content
-          // ======================================================
           SafeArea(
             child: Column(
               children: [
@@ -255,38 +252,36 @@ class _OnboardingViewBodyState extends State<OnboardingViewBody>
 
                       const Spacer(),
 
-                      GestureDetector(
-                        onTap: skip,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 17,
-                            vertical: 9,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: .18),
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: .20),
+                      if (currentPage != images.length - 1)
+                        GestureDetector(
+                          onTap: skip,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 17,
+                              vertical: 9,
                             ),
-                          ),
-                          child: Text(
-                            s.onboardingSkip,
-                            style: AppTextStyles.cairoSemiBold.copyWith(
-                              color: Colors.white,
-                              fontSize: 14,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: .18),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: .20),
+                              ),
+                            ),
+                            child: Text(
+                              s.onboardingSkip,
+                              style: AppTextStyles.cairoSemiBold.copyWith(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: AppSpacing.sm16),
 
-                // ==================================================
-                // PageView
-                // ==================================================
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
@@ -330,9 +325,6 @@ class _OnboardingViewBodyState extends State<OnboardingViewBody>
 
                 const SizedBox(height: AppSpacing.xs8),
 
-                // ==================================================
-                // Indicator
-                // ==================================================
                 OnboardingIndicator(
                   currentPage: currentPage,
                   count: images.length,
@@ -340,9 +332,6 @@ class _OnboardingViewBodyState extends State<OnboardingViewBody>
 
                 const SizedBox(height: AppSpacing.md24),
 
-                // ==================================================
-                // Button
-                // ==================================================
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.xs4,

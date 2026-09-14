@@ -1,5 +1,5 @@
 import 'package:demix/constants/constants.dart';
-import 'package:demix/features/home/presentation/views/widgets/resturant_card.dart';
+import 'package:demix/features/home/presentation/views/widgets/business_card.dart';
 import 'package:flutter/material.dart';
 
 class BusinessCardList extends StatelessWidget {

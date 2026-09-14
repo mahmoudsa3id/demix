@@ -3,27 +3,26 @@ import 'package:demix/features/location/presentation/cubit/saved_location_cubit.
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../data/datasources/device/location_device_data_source.dart';
-import '../../data/datasources/geocoding/nominatim_geocoding_data_source.dart';
-import '../../data/datasources/local/location_local_data_source.dart';
-import '../../data/datasources/remote/location_firestore_data_source.dart';
-import '../../data/datasources/zone/kafr_el_dawar_zones.dart';
-import '../../data/datasources/zone/local_service_zone_checker.dart';
-import '../../data/datasources/zone/service_zone_checker.dart';
-import '../../data/repositories/location_repository_impl.dart';
-import '../../domain/repositories/location_repository.dart';
-import '../../domain/use_cases/check_service_zone_use_case.dart';
-import '../../domain/use_cases/delete_current_location_use_case.dart';
-import '../../domain/use_cases/get_current_device_location_use_case.dart';
-import '../../domain/use_cases/get_saved_location_use_case.dart';
-import '../../domain/use_cases/reverse_geocode_use_case.dart';
-import '../../domain/use_cases/save_current_location_use_case.dart';
-import '../../domain/use_cases/update_current_location_use_case.dart';
-import '../../presentation/cubit/location_cubit.dart';
+import '../../features/location/data/datasources/device/location_device_data_source.dart';
+import '../../features/location/data/datasources/geocoding/nominatim_geocoding_data_source.dart';
+import '../../features/location/data/datasources/local/location_local_data_source.dart';
+import '../../features/location/data/datasources/remote/location_firestore_data_source.dart';
+import '../../features/location/data/datasources/zone/kafr_el_dawar_zones.dart';
+import '../../features/location/data/datasources/zone/local_service_zone_checker.dart';
+import '../../features/location/data/datasources/zone/service_zone_checker.dart';
+import '../../features/location/data/repositories/location_repository_impl.dart';
+import '../../features/location/domain/repositories/location_repository.dart';
+import '../../features/location/domain/use_cases/check_service_zone_use_case.dart';
+import '../../features/location/domain/use_cases/delete_current_location_use_case.dart';
+import '../../features/location/domain/use_cases/get_current_device_location_use_case.dart';
+import '../../features/location/domain/use_cases/get_saved_location_use_case.dart';
+import '../../features/location/domain/use_cases/reverse_geocode_use_case.dart';
+import '../../features/location/domain/use_cases/save_current_location_use_case.dart';
+import '../../features/location/domain/use_cases/update_current_location_use_case.dart';
+import '../../features/location/presentation/cubit/location_cubit.dart';
 
-final GetIt getIt = GetIt.instance;
-
-void setupLocationDependencies({
+void setupLocationDependencies(
+  GetIt getIt, {
   required String userAgent,
   String languageCode = 'ar',
 }) {

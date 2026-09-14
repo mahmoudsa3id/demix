@@ -17,9 +17,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
 
-final GetIt getIt = GetIt.instance;
-
-void setupAuthDependencies() {
+void setupAuthDependencies(GetIt getIt) {
   // ---------------------------------------------------------------------------
   // Firebase
   // ---------------------------------------------------------------------------
