@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:demix/core/localization/locale_controller.dart';
 import 'package:demix/core/routing/navigation.dart';
-import 'package:demix/core/routing/router_names.dart';
+import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/utils/helper/helper_widgets.dart';
 import 'package:demix/core/widgets/app_cached_image.dart';

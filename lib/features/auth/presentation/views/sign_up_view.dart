@@ -1,6 +1,6 @@
 import 'package:demix/core/errors/firebase_message_solver.dart';
 import 'package:demix/core/routing/navigation.dart';
-import 'package:demix/core/routing/router_names.dart';
+import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_text_styles.dart';
 
 import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';

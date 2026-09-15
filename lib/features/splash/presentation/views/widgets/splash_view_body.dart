@@ -1,6 +1,6 @@
 import 'package:demix/constants/assets.dart';
 import 'package:demix/core/db/shared_preferance.dart';
-import 'package:demix/core/routing/router_names.dart';
+import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/features/splash/presentation/views/widgets/splash_progress_pointer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

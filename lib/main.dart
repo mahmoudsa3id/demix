@@ -1,12 +1,15 @@
+import 'package:demix/core/db/db_di.dart';
 import 'package:demix/core/db/shared_preferance.dart';
+import 'package:demix/core/di/account_di.dart';
 import 'package:demix/core/di/auth_di.dart';
 import 'package:demix/core/di/business_di.dart';
 import 'package:demix/core/di/location_di.dart';
+import 'package:demix/core/di/ordering_di.dart';
 import 'package:demix/core/widgets/snack_bar/app_snack_bar_service.dart';
 
+import 'package:demix/features/account/presentation/cubit/account_cubit.dart';
 import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
-
-// Location
+import 'package:demix/features/cart/presentation/cubit/cart_cubit.dart';
 
 import 'package:demix/firebase_options.dart';
 import 'package:demix/generated/l10n.dart';
@@ -21,6 +24,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt getIt = GetIt.instance;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -40,13 +44,21 @@ Future<void> main() async {
   // Dependency Injection
   // ---------------------------------------------------------------------------
 
+  setupDatabaseDependencies(getIt);
+
   setupAuthDependencies(getIt);
-  setupBusinessDependencies(getIt);
+
   setupLocationDependencies(
     getIt,
     userAgent: 'DeMiX/1.0 (mahmoud.said.developer@gmail.com)',
     languageCode: 'ar',
   );
+
+  setupBusinessDependencies(getIt);
+
+  setupOrderingDependencies(getIt);
+
+  setupAccountDependencies(getIt);
 
   // ---------------------------------------------------------------------------
   // Run App
@@ -85,8 +97,25 @@ class _DemixMaterialAppState extends State<_DemixMaterialApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthCubit>(
-      create: (_) => getIt<AuthCubit>()..initialize(),
+    return MultiBlocProvider(
+      providers: [
+        // ---------------------------------------------------------------------
+        // Auth
+        // ---------------------------------------------------------------------
+        BlocProvider<AuthCubit>(
+          create: (_) => getIt<AuthCubit>()..initialize(),
+        ),
+
+        // ---------------------------------------------------------------------
+        // Cart
+        // ---------------------------------------------------------------------
+        BlocProvider<CartCubit>.value(value: getIt<CartCubit>()..load()),
+
+        // ---------------------------------------------------------------------
+        // Account
+        // ---------------------------------------------------------------------
+        BlocProvider<AccountCubit>.value(value: getIt<AccountCubit>()..load()),
+      ],
       child: AnimatedBuilder(
         animation: LocaleController.instance,
         builder: (context, child) {

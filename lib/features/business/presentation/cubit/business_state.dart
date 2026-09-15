@@ -1,13 +1,7 @@
-import 'package:equatable/equatable.dart';
+import 'package:demix/features/business/domain/entities/business.dart';
 
-import '../../../../core/errors/app_failure.dart';
-import '../../domain/entities/business.dart';
-
-sealed class BusinessState extends Equatable {
+sealed class BusinessState {
   const BusinessState();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class BusinessInitial extends BusinessState {
@@ -21,30 +15,28 @@ class BusinessLoading extends BusinessState {
 class BusinessLoaded extends BusinessState {
   const BusinessLoaded({
     required this.businesses,
-    required this.type,
+    required this.page,
+    required this.hasMore,
+    required this.search,
   });
 
   final List<Business> businesses;
-  final String type;
-
-  @override
-  List<Object?> get props => [businesses, type];
+  final int page;
+  final bool hasMore;
+  final String search;
 }
 
-class BusinessEmpty extends BusinessState {
-  const BusinessEmpty(this.type);
-
-  final String type;
-
-  @override
-  List<Object?> get props => [type];
+class BusinessLoadingMore extends BusinessLoaded {
+  const BusinessLoadingMore({
+    required super.businesses,
+    required super.page,
+    required super.hasMore,
+    required super.search,
+  });
 }
 
 class BusinessFailure extends BusinessState {
-  const BusinessFailure(this.failure);
+  const BusinessFailure(this.message);
 
-  final AppFailure failure;
-
-  @override
-  List<Object?> get props => [failure];
+  final String message;
 }

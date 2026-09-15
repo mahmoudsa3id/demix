@@ -1,193 +1,212 @@
+import 'package:demix/core/routing/route_paths.dart';
+import 'package:demix/core/theme/app_colors.dart';
+import 'package:demix/core/utils/helper/business_hours_utils.dart';
+import 'package:demix/core/widgets/app_cached_image.dart';
+import 'package:demix/features/business/domain/entities/business.dart';
+import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_radius.dart';
-import '../../../../core/widgets/app_cached_image.dart';
-import '../../domain/entities/business.dart';
+import 'package:go_router/go_router.dart';
 
 class BusinessCard extends StatelessWidget {
-  const BusinessCard({
-    super.key,
-    required this.business,
-  });
+  const BusinessCard({super.key, required this.business});
 
   final Business business;
 
   @override
   Widget build(BuildContext context) {
-    final isArabic =
-        Localizations.localeOf(context).languageCode ==
-            'ar';
+    final s = S.of(context);
 
-    final imageUrl =
-        business.coverUrl?.trim() ?? '';
+    final isOpen = isBusinessCurrentlyOpen(
+      open: business.workingHours?.open,
+      close: business.workingHours?.close,
+      isManuallyOpen: business.isOpen,
+    );
 
-    return SizedBox(
-      width: 120,
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius:
-              BorderRadius.circular(AppRadius.xs),
-          border: Border.all(
-            color: AppColors.border,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          context.push(RoutePaths.restaurantDetails(business.id));
+        },
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border.withValues(alpha: .6)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .04),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              _BusinessLogo(imageUrl: business.logoUrl),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            business.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        _StatusBadge(
+                          isOpen: isOpen,
+                          openText: s.open,
+                          closedText: s.closed,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 7),
+
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.star_rounded,
+                          size: 16,
+                          color: Colors.amber,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          business.rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '(${business.reviewCount})',
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                      ],
+                    ),
+
+                    if (business.workingHours != null) ...[
+                      const SizedBox(height: 7),
+
+                      Row(
+                        children: [
+                          const Icon(Icons.access_time_rounded, size: 15),
+                          const SizedBox(width: 5),
+                          Text(
+                            '${formatBusinessTime(business.workingHours!.open, context)} - ${formatBusinessTime(business.workingHours!.close, context)}',
+                            style: const TextStyle(fontSize: 11.5),
+                          ),
+                        ],
+                      ),
+                    ],
+
+                    if (business.address != null &&
+                        business.address!.isNotEmpty) ...[
+                      const SizedBox(height: 5),
+
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined, size: 15),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              business.address!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 8),
+
+              const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+            ],
           ),
         ),
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 85,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (imageUrl.isNotEmpty)
-                    AppCachedImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                    )
-                  else
-                    Container(
-                      color: AppColors.surfaceLight,
-                      child: const Icon(
-                        Icons.storefront_rounded,
-                        color:
-                            AppColors.textSecondary,
-                      ),
-                    ),
+      ),
+    );
+  }
+}
 
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration:
-                          const BoxDecoration(
-                        color: AppColors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.favorite_border_rounded,
-                        size: 20,
-                      ),
-                    ),
-                  ),
+class _BusinessLogo extends StatelessWidget {
+  const _BusinessLogo({required this.imageUrl});
 
-                  Positioned(
-                    left: 3,
-                    bottom: 3,
-                    child: Container(
-                      padding:
-                          const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.white
-                            .withOpacity(.95),
-                        borderRadius: AppRadius
-                            .borderRadiusSmall,
-                      ),
-                      child: Text(
-                        '${business.estimatedDeliveryTime} min',
-                        style: const TextStyle(
-                          fontSize: 8,
-                          fontWeight:
-                              FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+  final String? imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 68,
+      height: 68,
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: imageUrl == null || imageUrl!.isEmpty
+          ? const Icon(
+              Icons.storefront_rounded,
+              size: 30,
+              color: AppColors.textSecondary,
+            )
+          : AppCachedImage(
+              imageUrl: imageUrl!,
+              width: 68,
+              height: 68,
+              fit: BoxFit.cover,
             ),
+    );
+  }
+}
 
-            Padding(
-              padding:
-                  const EdgeInsets.fromLTRB(
-                5,
-                4,
-                4,
-                0,
-              ),
-              child: Text(
-                business.displayName(
-                  isArabic: isArabic,
-                ),
-                maxLines: 1,
-                overflow:
-                    TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({
+    required this.isOpen,
+    required this.openText,
+    required this.closedText,
+  });
 
-            Padding(
-              padding:
-                  const EdgeInsets.fromLTRB(
-                5,
-                2,
-                4,
-                0,
-              ),
-              child: Row(
-                children: [
-                  const Text(
-                    '★',
-                    style: TextStyle(
-                      color:
-                          AppColors.secondary,
-                      fontSize: 8,
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    child: Text(
-                      '${business.rating.toStringAsFixed(1)} (${business.reviewCount})',
-                      maxLines: 1,
-                      overflow:
-                          TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 8,
-                        color:
-                            AppColors.textMuted,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  final bool isOpen;
+  final String openText;
+  final String closedText;
 
-            Padding(
-              padding:
-                  const EdgeInsets.fromLTRB(
-                5,
-                2,
-                3,
-                0,
-              ),
-              child: Text(
-                business.type == 'cafe'
-                    ? (isArabic ? 'كافيه' : 'Cafe')
-                    : (isArabic
-                        ? 'مطعم'
-                        : 'Restaurant'),
-                maxLines: 1,
-                overflow:
-                    TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 8,
-                  color:
-                      AppColors.textMuted,
-                ),
-              ),
-            ),
-          ],
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: (isOpen ? Colors.green : Colors.red).withValues(alpha: .08),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        isOpen ? openText : closedText,
+        style: TextStyle(
+          fontSize: 9.5,
+          fontWeight: FontWeight.w700,
+          color: isOpen ? Colors.green : Colors.red,
         ),
       ),
     );

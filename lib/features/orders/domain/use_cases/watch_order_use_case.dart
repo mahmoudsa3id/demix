@@ -1,0 +1,1 @@
+import 'package:cloud_firestore/cloud_firestore.dart';import '../repositories/order_repository.dart';class WatchOrderUseCase{const WatchOrderUseCase(this._repository);final OrderRepository _repository;Stream<DocumentSnapshot<Map<String,dynamic>>> call(String id)=>_repository.watchOrder(id);}

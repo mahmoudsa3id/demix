@@ -1,203 +1,202 @@
-import 'package:demix/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../core/di/auth_di.dart';
-import '../../../../core/routing/navigation.dart';
-import '../../../../core/routing/router_names.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../generated/l10n.dart';
-import '../cubit/business_cubit.dart';
-import '../cubit/business_state.dart';
-import '../widgets/business_wide_card.dart';
+import 'package:go_router/go_router.dart';
+import 'package:demix/features/business/presentation/cubit/business_cubit.dart';
+import 'package:demix/features/business/presentation/cubit/business_state.dart';
+import 'package:demix/features/business/presentation/widgets/business_card.dart';
+import 'package:demix/main.dart';
 
 class CategoryView extends StatelessWidget {
   const CategoryView({super.key, required this.type});
-
   final String type;
 
-  String _title(BuildContext context) {
-    final s = S.of(context);
-
-    switch (type) {
-      case 'restaurant':
-        return s.restaurants;
-      case 'cafe':
-        return s.cafes;
-      default:
-        return type;
-    }
-  }
+  bool get isCafe => type.toLowerCase() == 'cafe';
 
   @override
   Widget build(BuildContext context) {
-    final normalizedType = type.trim().toLowerCase();
+    final theme = Theme.of(context);
+    final title = isCafe ? 'الكافيهات' : 'المطاعم';
+    final icon = isCafe ? Icons.local_cafe_rounded : Icons.restaurant_rounded;
 
     return BlocProvider(
-      create: (_) => getIt<BusinessCubit>()..load(normalizedType),
+      create: (_) => getIt<BusinessCubit>()..load(type),
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          foregroundColor: AppColors.black,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () {
-              popOrGo(context, fallback: RoutePaths.home);
-            },
-            icon: const Icon(Icons.arrow_back_rounded),
-          ),
-          title: Text(
-            _title(context),
-            style: const TextStyle(
-              color: AppColors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        body: BlocBuilder<BusinessCubit, BusinessState>(
-          builder: (context, state) {
-            if (state is BusinessInitial || state is BusinessLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              );
-            }
-
-            if (state is BusinessFailure) {
-              return _ErrorView(
-                message: state.failure.message,
-                onRetry: context.read<BusinessCubit>().retry,
-              );
-            }
-
-            if (state is BusinessEmpty) {
-              return _EmptyView(title: _title(context));
-            }
-
-            if (state is! BusinessLoaded) {
-              return const SizedBox.shrink();
-            }
-
-            return RefreshIndicator(
-              color: AppColors.primary,
-              onRefresh: () =>
-                  context.read<BusinessCubit>().load(normalizedType),
-              child: ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: state.businesses.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  return BusinessWideCard(business: state.businesses[index]);
+        backgroundColor: theme.colorScheme.surface,
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 14, 18, 8),
+                  child: Row(
+                    children: [
+                      _RoundButton(
+                        icon: Icons.arrow_back_rounded,
+                        onTap: () => context.pop(),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'اختار مكانك المفضل واطلب في دقائق',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(icon, color: theme.colorScheme.primary),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 10, 18, 16),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.search_rounded,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'ابحث عن ${isCafe ? 'كافيه' : 'مطعم'}...',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              BlocBuilder<BusinessCubit, BusinessState>(
+                builder: (context, state) {
+                  if (state is BusinessLoading || state is BusinessInitial) {
+                    return const SliverPadding(
+                      padding: EdgeInsets.symmetric(horizontal: 18),
+                      sliver: SliverToBoxAdapter(child: _LoadingList()),
+                    );
+                  }
+                  if (state is BusinessFailure) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _StateView(
+                        message: state.message,
+                        onRetry: () => context.read<BusinessCubit>().load(type),
+                      ),
+                    );
+                  }
+                  if (state is BusinessLoaded && state.businesses.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _StateView(message: 'مفيش أماكن متاحة حاليًا'),
+                    );
+                  }
+                  final businesses = state is BusinessLoaded
+                      ? state.businesses
+                      : const [];
+                  return SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(18, 0, 18, 30),
+                    sliver: SliverList.separated(
+                      itemCount: businesses.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 14),
+                      itemBuilder: (_, index) =>
+                          BusinessCard(business: businesses[index]),
+                    ),
+                  );
                 },
               ),
-            );
-          },
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _EmptyView extends StatelessWidget {
-  const _EmptyView({required this.title});
-
-  final String title;
-
+class _RoundButton extends StatelessWidget {
+  const _RoundButton({required this.icon, required this.onTap});
+  final IconData icon;
+  final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 82,
-              height: 82,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(.08),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.storefront_outlined,
-                color: AppColors.primary,
-                size: 38,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              isArabic ? 'لا توجد بيانات حاليًا' : 'No businesses yet',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: AppColors.black,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              isArabic
-                  ? 'لم تتم إضافة $title بعد.'
-                  : 'No $title have been added yet.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Material(
+    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+    shape: const CircleBorder(),
+    child: InkWell(
+      onTap: onTap,
+      customBorder: const CircleBorder(),
+      child: SizedBox(width: 46, height: 46, child: Icon(icon)),
+    ),
+  );
 }
 
-class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message, required this.onRetry});
+class _LoadingList extends StatelessWidget {
+  const _LoadingList();
+  @override
+  Widget build(BuildContext context) => Column(
+    children: List.generate(
+      3,
+      (_) => Container(
+        height: 220,
+        margin: const EdgeInsets.only(bottom: 14),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(24),
+        ),
+      ),
+    ),
+  );
+}
 
+class _StateView extends StatelessWidget {
+  const _StateView({required this.message, this.onRetry});
   final String message;
-  final VoidCallback onRetry;
-
+  final VoidCallback? onRetry;
   @override
-  Widget build(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline_rounded,
-              color: AppColors.error,
-              size: 52,
-            ),
-            const SizedBox(height: 14),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: onRetry,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-              ),
-              child: Text(isArabic ? 'إعادة المحاولة' : 'Retry'),
-            ),
-          ],
-        ),
+  Widget build(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(30),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.storefront_outlined,
+            size: 54,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(height: 16),
+          Text(message, textAlign: TextAlign.center),
+          if (onRetry != null)
+            TextButton(onPressed: onRetry, child: const Text('حاول مرة أخرى')),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

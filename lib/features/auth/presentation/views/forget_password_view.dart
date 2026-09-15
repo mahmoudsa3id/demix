@@ -1,5 +1,5 @@
 import 'package:demix/core/routing/navigation.dart';
-import 'package:demix/core/routing/router_names.dart';
+import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_text_styles.dart';
 import 'package:demix/core/widgets/snack_bar/app_snack_bar_service.dart';
 

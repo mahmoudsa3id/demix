@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:demix/features/location/domain/entities/service_zone.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../core/errors/location_failure.dart';
 import '../../domain/entities/location_coordinate.dart';
 import '../../domain/entities/location_entity.dart';
 import '../../domain/use_cases/check_service_zone_use_case.dart';
@@ -14,15 +13,11 @@ import 'location_state.dart';
 
 class LocationCubit extends Cubit<LocationState> {
   LocationCubit({
-    required GetCurrentDeviceLocationUseCase getCurrentLocation,
-    required ReverseGeocodeUseCase reverseGeocode,
-    required CheckServiceZoneUseCase checkServiceZone,
-    required SaveCurrentLocationUseCase saveCurrentLocation,
-  }) : _getCurrentLocation = getCurrentLocation,
-       _reverseGeocode = reverseGeocode,
-       _checkServiceZone = checkServiceZone,
-       _saveCurrentLocation = saveCurrentLocation,
-       super(const LocationInitial());
+    required this._getCurrentLocation,
+    required this._reverseGeocode,
+    required this._checkServiceZone,
+    required this._saveCurrentLocation,
+  }) : super(const LocationInitial());
 
   final GetCurrentDeviceLocationUseCase _getCurrentLocation;
   final ReverseGeocodeUseCase _reverseGeocode;

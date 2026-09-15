@@ -1,19 +1,8 @@
-import 'package:dartz/dartz.dart';
-
-import '../../../../core/errors/app_failure.dart';
-import '../entities/business.dart';
-import '../repositories/business_repository.dart';
+import 'package:demix/features/business/domain/entities/business.dart';
+import 'package:demix/features/business/domain/repositories/business_repository.dart';
 
 class GetBusinessesByTypeUseCase {
-  const GetBusinessesByTypeUseCase(
-    this._repository,
-  );
-
+  const GetBusinessesByTypeUseCase(this._repository);
   final BusinessRepository _repository;
-
-  Future<Either<AppFailure, List<Business>>> call(
-    String type,
-  ) {
-    return _repository.getBusinessesByType(type);
-  }
+  Future<List<Business>> call(String type) => _repository.getBusinessesByType(type);
 }

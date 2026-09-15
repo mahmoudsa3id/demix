@@ -1,5 +1,5 @@
 import 'package:demix/constants/constants.dart';
-import 'package:demix/core/routing/router_names.dart';
+import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/theme/app_radius.dart';
 import 'package:demix/generated/l10n.dart';

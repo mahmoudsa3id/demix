@@ -1,6 +1,6 @@
 import 'package:demix/constants/assets.dart';
 import 'package:demix/core/db/shared_preferance.dart';
-import 'package:demix/core/routing/router_names.dart';
+import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/theme/app_spacing.dart';
 import 'package:demix/core/theme/app_text_styles.dart';

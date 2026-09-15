@@ -3,6 +3,7 @@ import 'package:demix/features/location/presentation/cubit/saved_location_cubit.
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../core/db/db.dart';
 import '../../features/location/data/datasources/device/location_device_data_source.dart';
 import '../../features/location/data/datasources/geocoding/nominatim_geocoding_data_source.dart';
 import '../../features/location/data/datasources/local/location_local_data_source.dart';
@@ -43,13 +44,10 @@ void setupLocationDependencies(
 
   if (!getIt.isRegistered<LocationLocalDataSource>()) {
     getIt.registerLazySingleton<LocationLocalDataSource>(
-      LocationLocalDataSource.new,
+      () => LocationLocalDataSource(database: getIt<AppDatabase>()),
     );
   }
-  getIt.registerFactory<SavedLocationCubit>(
-    () =>
-        SavedLocationCubit(getSavedLocation: getIt<GetSavedLocationUseCase>()),
-  );
+
   if (!getIt.isRegistered<LocationFirestoreDataSource>()) {
     getIt.registerLazySingleton<LocationFirestoreDataSource>(
       () => LocationFirestoreDataSource(
@@ -130,6 +128,14 @@ void setupLocationDependencies(
         reverseGeocode: getIt<ReverseGeocodeUseCase>(),
         checkServiceZone: getIt<CheckServiceZoneUseCase>(),
         saveCurrentLocation: getIt<SaveCurrentLocationUseCase>(),
+      ),
+    );
+  }
+
+  if (!getIt.isRegistered<SavedLocationCubit>()) {
+    getIt.registerFactory<SavedLocationCubit>(
+      () => SavedLocationCubit(
+        getSavedLocation: getIt<GetSavedLocationUseCase>(),
       ),
     );
   }

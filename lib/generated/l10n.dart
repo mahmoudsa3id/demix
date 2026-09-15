@@ -205,6 +205,516 @@ class S {
     return Intl.message('Total', name: 'total', desc: '', args: []);
   }
 
+  /// `Open`
+  String get open {
+    return Intl.message('Open', name: 'open', desc: '', args: []);
+  }
+
+  /// `Closed`
+  String get closed {
+    return Intl.message('Closed', name: 'closed', desc: '', args: []);
+  }
+
+  /// `Working hours not available`
+  String get noWorkingHours {
+    return Intl.message(
+      'Working hours not available',
+      name: 'noWorkingHours',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to load restaurants right now`
+  String get failedToLoadRestaurants {
+    return Intl.message(
+      'Unable to load restaurants right now',
+      name: 'failedToLoadRestaurants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No restaurants available right now`
+  String get noRestaurantsAvailable {
+    return Intl.message(
+      'No restaurants available right now',
+      name: 'noRestaurantsAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restaurant`
+  String get restaurant {
+    return Intl.message('Restaurant', name: 'restaurant', desc: '', args: []);
+  }
+
+  /// `Cafe`
+  String get cafe {
+    return Intl.message('Cafe', name: 'cafe', desc: '', args: []);
+  }
+
+  /// `Business`
+  String get business {
+    return Intl.message('Business', name: 'business', desc: '', args: []);
+  }
+
+  /// `Business Details`
+  String get businessDetails {
+    return Intl.message(
+      'Business Details',
+      name: 'businessDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Working Hours`
+  String get workingHours {
+    return Intl.message(
+      'Working Hours',
+      name: 'workingHours',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opening Time`
+  String get openingTime {
+    return Intl.message(
+      'Opening Time',
+      name: 'openingTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Closing Time`
+  String get closingTime {
+    return Intl.message(
+      'Closing Time',
+      name: 'closingTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Address`
+  String get address {
+    return Intl.message('Address', name: 'address', desc: '', args: []);
+  }
+
+  /// `Delivery Information`
+  String get deliveryInformation {
+    return Intl.message(
+      'Delivery Information',
+      name: 'deliveryInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Minimum Order`
+  String get minimumOrder {
+    return Intl.message(
+      'Minimum Order',
+      name: 'minimumOrder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Estimated Delivery Time`
+  String get estimatedDeliveryTime {
+    return Intl.message(
+      'Estimated Delivery Time',
+      name: 'estimatedDeliveryTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Terms & Conditions`
+  String get termsAndConditionsTitle {
+    return Intl.message(
+      'Terms & Conditions',
+      name: 'termsAndConditionsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome to DeMiX. By using the application, you agree to comply with the following terms and conditions.\n\n1. Use of the Application\nDeMiX allows you to browse restaurants, cafes, and available products, place orders, and use the payment methods provided within the application.\n\n2. Account\nYou are responsible for providing accurate information and maintaining the confidentiality of your account credentials. You must not use your account for any illegal or abusive activity.\n\n3. Orders\nAfter an order is confirmed, it is sent to the restaurant or service provider for preparation. Delivery time may vary depending on your location, restaurant status, and operational conditions.\n\n4. Prices and Payment\nPrices displayed in the application are the prices applicable at the time of ordering. Delivery fees or any additional charges will be clearly displayed before confirming the order.\n\n5. Cancellation and Refunds\nThe ability to cancel an order or receive a refund may depend on the order status, restaurant policy, and payment method used.\n\n6. Restaurants and Service Providers\nRestaurants and service providers are responsible for the quality, preparation, and accuracy of the products and orders they provide.\n\n7. Intellectual Property\nAll rights related to the DeMiX application, brand, design, and owned content are reserved. They may not be copied or used without permission.\n\n8. Changes to the Terms\nDeMiX may update these terms when necessary. The updated version will be published within the application.\n\n9. Contact Us\nFor questions or complaints, you can contact us through the support options available within the application.`
+  String get termsAndConditionsContent {
+    return Intl.message(
+      'Welcome to DeMiX. By using the application, you agree to comply with the following terms and conditions.\n\n1. Use of the Application\nDeMiX allows you to browse restaurants, cafes, and available products, place orders, and use the payment methods provided within the application.\n\n2. Account\nYou are responsible for providing accurate information and maintaining the confidentiality of your account credentials. You must not use your account for any illegal or abusive activity.\n\n3. Orders\nAfter an order is confirmed, it is sent to the restaurant or service provider for preparation. Delivery time may vary depending on your location, restaurant status, and operational conditions.\n\n4. Prices and Payment\nPrices displayed in the application are the prices applicable at the time of ordering. Delivery fees or any additional charges will be clearly displayed before confirming the order.\n\n5. Cancellation and Refunds\nThe ability to cancel an order or receive a refund may depend on the order status, restaurant policy, and payment method used.\n\n6. Restaurants and Service Providers\nRestaurants and service providers are responsible for the quality, preparation, and accuracy of the products and orders they provide.\n\n7. Intellectual Property\nAll rights related to the DeMiX application, brand, design, and owned content are reserved. They may not be copied or used without permission.\n\n8. Changes to the Terms\nDeMiX may update these terms when necessary. The updated version will be published within the application.\n\n9. Contact Us\nFor questions or complaints, you can contact us through the support options available within the application.',
+      name: 'termsAndConditionsContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage Language`
+  String get manageLanguage {
+    return Intl.message(
+      'Manage Language',
+      name: 'manageLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone`
+  String get phone {
+    return Intl.message('Phone', name: 'phone', desc: '', args: []);
+  }
+
+  /// `Privacy Policy`
+  String get privacyPolicyTitle {
+    return Intl.message(
+      'Privacy Policy',
+      name: 'privacyPolicyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `At DeMiX, we respect your privacy and are committed to protecting your data and using it responsibly.\n\n1. Information We Collect\nWe may collect information you provide when creating or using your account, such as your name, email address, phone number, and delivery addresses.\n\n2. Location Data\nWe may use your location to help determine your delivery address, show restaurants and services available in your area, and improve your experience with the application.\n\n3. How We Use Your Data\nWe use your information to create and manage your account, process and fulfill your orders, manage delivery addresses, improve DeMiX services, and communicate with you about your orders and account.\n\n4. Data Protection\nWe take appropriate measures to help protect your information from unauthorized access or use.\n\n5. Sharing Information\nNecessary information may be shared with restaurants or delivery service providers only to the extent required to fulfill your order and provide the requested service.\n\n6. Third-Party Services\nThe application may use third-party services such as authentication, maps, payment, and analytics services. These services are subject to their own privacy policies.\n\n7. Data Retention\nWe retain information for as long as necessary to provide our services and comply with applicable legal obligations.\n\n8. Account Deletion\nYou may request deletion of your account and data through the available options within the application, subject to any information that must be retained by law.\n\n9. Privacy Policy Updates\nWe may update this Privacy Policy from time to time. Any changes will be published within the application.\n\n10. Contact Us\nIf you have any questions about privacy or your data, you can contact us through the support section within the application.`
+  String get privacyPolicyContent {
+    return Intl.message(
+      'At DeMiX, we respect your privacy and are committed to protecting your data and using it responsibly.\n\n1. Information We Collect\nWe may collect information you provide when creating or using your account, such as your name, email address, phone number, and delivery addresses.\n\n2. Location Data\nWe may use your location to help determine your delivery address, show restaurants and services available in your area, and improve your experience with the application.\n\n3. How We Use Your Data\nWe use your information to create and manage your account, process and fulfill your orders, manage delivery addresses, improve DeMiX services, and communicate with you about your orders and account.\n\n4. Data Protection\nWe take appropriate measures to help protect your information from unauthorized access or use.\n\n5. Sharing Information\nNecessary information may be shared with restaurants or delivery service providers only to the extent required to fulfill your order and provide the requested service.\n\n6. Third-Party Services\nThe application may use third-party services such as authentication, maps, payment, and analytics services. These services are subject to their own privacy policies.\n\n7. Data Retention\nWe retain information for as long as necessary to provide our services and comply with applicable legal obligations.\n\n8. Account Deletion\nYou may request deletion of your account and data through the available options within the application, subject to any information that must be retained by law.\n\n9. Privacy Policy Updates\nWe may update this Privacy Policy from time to time. Any changes will be published within the application.\n\n10. Contact Us\nIf you have any questions about privacy or your data, you can contact us through the support section within the application.',
+      name: 'privacyPolicyContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preferences`
+  String get accountPreferences {
+    return Intl.message(
+      'Preferences',
+      name: 'accountPreferences',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage your saved addresses`
+  String get manageYourAddresses {
+    return Intl.message(
+      'Manage your saved addresses',
+      name: 'manageYourAddresses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View your previous orders`
+  String get viewYourOrders {
+    return Intl.message(
+      'View your previous orders',
+      name: 'viewYourOrders',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your saved items`
+  String get savedItems {
+    return Intl.message(
+      'Your saved items',
+      name: 'savedItems',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage your app preferences`
+  String get manageYourPreferences {
+    return Intl.message(
+      'Manage your app preferences',
+      name: 'manageYourPreferences',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage your notifications`
+  String get manageNotifications {
+    return Intl.message(
+      'Manage your notifications',
+      name: 'manageNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Help & Support`
+  String get helpAndSupport {
+    return Intl.message(
+      'Help & Support',
+      name: 'helpAndSupport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy and security information`
+  String get privacyAndSecurity {
+    return Intl.message(
+      'Privacy and security information',
+      name: 'privacyAndSecurity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account Actions`
+  String get accountActions {
+    return Intl.message(
+      'Account Actions',
+      name: 'accountActions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to logout?`
+  String get logoutConfirmation {
+    return Intl.message(
+      'Are you sure you want to logout?',
+      name: 'logoutConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Account`
+  String get deleteAccount {
+    return Intl.message(
+      'Delete Account',
+      name: 'deleteAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to permanently delete your account?`
+  String get deleteAccountConfirmation {
+    return Intl.message(
+      'Are you sure you want to permanently delete your account?',
+      name: 'deleteAccountConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account deletion will be available soon.`
+  String get deleteAccountComingSoon {
+    return Intl.message(
+      'Account deletion will be available soon.',
+      name: 'deleteAccountComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Profile`
+  String get editProfile {
+    return Intl.message(
+      'Edit Profile',
+      name: 'editProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Name`
+  String get name {
+    return Intl.message('Name', name: 'name', desc: '', args: []);
+  }
+
+  /// `Email`
+  String get email {
+    return Intl.message('Email', name: 'email', desc: '', args: []);
+  }
+
+  /// `Save`
+  String get save {
+    return Intl.message('Save', name: 'save', desc: '', args: []);
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
+  }
+
+  /// `This field is required`
+  String get requiredField {
+    return Intl.message(
+      'This field is required',
+      name: 'requiredField',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid name`
+  String get invalidName {
+    return Intl.message(
+      'Please enter a valid name',
+      name: 'invalidName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid email`
+  String get invalidEmail {
+    return Intl.message(
+      'Please enter a valid email',
+      name: 'invalidEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile updated successfully`
+  String get profileUpdated {
+    return Intl.message(
+      'Profile updated successfully',
+      name: 'profileUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Arabic`
+  String get arabic {
+    return Intl.message('Arabic', name: 'arabic', desc: '', args: []);
+  }
+
+  /// `English`
+  String get english {
+    return Intl.message('English', name: 'english', desc: '', args: []);
+  }
+
+  /// `Security`
+  String get security {
+    return Intl.message('Security', name: 'security', desc: '', args: []);
+  }
+
+  /// `Order notifications`
+  String get orderNotifications {
+    return Intl.message(
+      'Order notifications',
+      name: 'orderNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Receive updates about your orders`
+  String get orderNotificationsDescription {
+    return Intl.message(
+      'Receive updates about your orders',
+      name: 'orderNotificationsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Offers and promotions`
+  String get offersNotifications {
+    return Intl.message(
+      'Offers and promotions',
+      name: 'offersNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Receive offers and special promotions`
+  String get offersNotificationsDescription {
+    return Intl.message(
+      'Receive offers and special promotions',
+      name: 'offersNotificationsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `General notifications`
+  String get generalNotifications {
+    return Intl.message(
+      'General notifications',
+      name: 'generalNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Receive important app notifications`
+  String get generalNotificationsDescription {
+    return Intl.message(
+      'Receive important app notifications',
+      name: 'generalNotificationsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DeMiX makes ordering your favorite food simple and convenient.`
+  String get aboutDescription {
+    return Intl.message(
+      'DeMiX makes ordering your favorite food simple and convenient.',
+      name: 'aboutDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Version`
+  String get version {
+    return Intl.message('Version', name: 'version', desc: '', args: []);
+  }
+
+  /// `Menu`
+  String get menu {
+    return Intl.message('Menu', name: 'menu', desc: '', args: []);
+  }
+
+  /// `Products`
+  String get products {
+    return Intl.message('Products', name: 'products', desc: '', args: []);
+  }
+
+  /// `Categories`
+  String get categories {
+    return Intl.message('Categories', name: 'categories', desc: '', args: []);
+  }
+
+  /// `No products available right now`
+  String get noProducts {
+    return Intl.message(
+      'No products available right now',
+      name: 'noProducts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No categories available right now`
+  String get noCategories {
+    return Intl.message(
+      'No categories available right now',
+      name: 'noCategories',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Do you have a coupon?`
   String get coupon {
     return Intl.message(

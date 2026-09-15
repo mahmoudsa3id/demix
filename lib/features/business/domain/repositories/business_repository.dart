@@ -1,9 +1,21 @@
-import 'package:dartz/dartz.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demix/features/business/data/models/business_model.dart';
+import 'package:demix/features/business/domain/entities/business.dart';
+import 'package:demix/features/business/domain/entities/business_page.dart';
+import 'package:demix/features/business/domain/entities/product.dart';
+import 'package:demix/features/business/domain/entities/product_category.dart';
 
-import '../../../../core/errors/app_failure.dart';
-import '../entities/business.dart';
-
-abstract interface class BusinessRepository {
-  Future<Either<AppFailure, List<Business>>>
-      getBusinessesByType(String type);
+abstract class BusinessRepository {
+  Future<List<Business>> getBusinessesByType(String type);
+  Future<Business> getBusinessById(String businessId);
+  Future<List<ProductCategory>> getCategories(String businessId);
+  Future<List<Product>> getProducts(String businessId, {String? categoryId});
+  Future<List<Business>> getAllBusinesses();
+  Future<BusinessPage> getBusinessesPage({
+    required String type,
+    required String languageCode,
+    String? search,
+    DocumentSnapshot<Map<String, dynamic>>? lastDocument,
+    int limit = 10,
+  });
 }

@@ -1,68 +1,116 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demix/features/business/domain/entities/business.dart';
 
-import '../../domain/entities/business.dart';
+import 'working_hours_model.dart';
 
 class BusinessModel extends Business {
   const BusinessModel({
     required super.id,
     required super.name,
+    required super.type,
     super.nameAr,
     super.nameEn,
     super.coverUrl,
     super.logoUrl,
-    required super.type,
-    required super.rating,
-    required super.reviewCount,
-    required super.estimatedDeliveryTime,
-    required super.deliveryFee,
-    required super.minimumOrder,
+    super.address,
+    super.latitude,
+    super.longitude,
+    super.rating,
+    super.reviewCount,
+    super.estimatedDeliveryTime,
+    super.deliveryFee,
+    super.minimumOrder,
+    super.isOpen,
+    super.workingHours,
   });
 
   factory BusinessModel.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> document,
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
   ) {
-    final data =
-        document.data() ?? const <String, dynamic>{};
+    final data = snapshot.data() ?? <String, dynamic>{};
 
     return BusinessModel(
-      id: document.id,
-      name: _string(data['name']) ?? 'Business',
-      nameAr: _string(data['nameAr']),
-      nameEn: _string(data['nameEn']),
-      coverUrl: _string(data['coverUrl']),
-      logoUrl: _string(data['logoUrl']),
-      type: (_string(data['type']) ?? '').toLowerCase(),
+      id: snapshot.id,
+      name: _string(data['name']),
+      type: _string(data['type']).toLowerCase(),
+
+      nameAr: _nullableString(data['nameAr']),
+      nameEn: _nullableString(data['nameEn']),
+
+      coverUrl: _nullableString(data['coverUrl']),
+      logoUrl: _nullableString(data['logoUrl']),
+
+      address: _nullableString(data['address']),
+
+      latitude: _nullableDouble(data['latitude']),
+      longitude: _nullableDouble(data['longitude']),
+
       rating: _double(data['rating']),
       reviewCount: _int(data['reviewCount']),
-      estimatedDeliveryTime:
-          _int(data['estimatedDeliveryTime']),
+
+      estimatedDeliveryTime: _int(data['estimatedDeliveryTime'], fallback: 30),
+
       deliveryFee: _double(data['deliveryFee']),
       minimumOrder: _double(data['minimumOrder']),
+
+      isOpen: data['isOpen'] is bool ? data['isOpen'] as bool : true,
+
+      workingHours: _workingHours(data['workingHours']),
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  static WorkingHoursModel? _workingHours(dynamic value) {
+    if (value is! Map) return null;
+
+    return WorkingHoursModel.fromMap(Map<String, dynamic>.from(value));
+  }
+
+  Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'type': type,
+
       'nameAr': nameAr,
       'nameEn': nameEn,
+
       'coverUrl': coverUrl,
       'logoUrl': logoUrl,
-      'type': type,
+
+      'address': address,
+
+      'latitude': latitude,
+      'longitude': longitude,
+
       'rating': rating,
       'reviewCount': reviewCount,
-      'estimatedDeliveryTime':
-          estimatedDeliveryTime,
+
+      'estimatedDeliveryTime': estimatedDeliveryTime,
       'deliveryFee': deliveryFee,
       'minimumOrder': minimumOrder,
+
+      'isOpen': isOpen,
+
+      'workingHours': workingHours == null
+          ? null
+          : WorkingHoursModel(
+              open: workingHours!.open,
+              close: workingHours!.close,
+            ).toMap(),
     };
   }
 
-  static String? _string(dynamic value) {
-    if (value is String && value.trim().isNotEmpty) {
-      return value.trim();
+  static String _string(dynamic value) {
+    return value?.toString().trim() ?? '';
+  }
+
+  static String? _nullableString(dynamic value) {
+    final valueString = value?.toString().trim();
+
+    if (valueString == null || valueString.isEmpty) {
+      return null;
     }
-    return null;
+
+    return valueString;
   }
 
   static double _double(dynamic value) {
@@ -70,22 +118,22 @@ class BusinessModel extends Business {
       return value.toDouble();
     }
 
-    if (value is String) {
-      return double.tryParse(value) ?? 0;
-    }
-
-    return 0;
+    return double.tryParse('$value') ?? 0;
   }
 
-  static int _int(dynamic value) {
+  static double? _nullableDouble(dynamic value) {
+    if (value is num) {
+      return value.toDouble();
+    }
+
+    return double.tryParse('$value');
+  }
+
+  static int _int(dynamic value, {int fallback = 0}) {
     if (value is num) {
       return value.toInt();
     }
 
-    if (value is String) {
-      return int.tryParse(value) ?? 0;
-    }
-
-    return 0;
+    return int.tryParse('$value') ?? fallback;
   }
 }
