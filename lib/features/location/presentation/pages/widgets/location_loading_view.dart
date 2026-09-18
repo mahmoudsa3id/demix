@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../../core/theme/app_colors.dart';
 
 class LocationLoadingView extends StatelessWidget {
   const LocationLoadingView({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../core/errors/location_failure.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../core/errors/location_failure.dart';
 
 class LocationErrorView extends StatelessWidget {
   const LocationErrorView({
@@ -59,10 +59,22 @@ class LocationErrorView extends StatelessWidget {
                 const SizedBox(height: 20),
                 Text(
                   failure.kind == LocationFailureKind.permissionDeniedForever
-                      ? _text(context, 'صلاحية الموقع مرفوضة نهائيًا', 'Location permission is permanently denied')
+                      ? _text(
+                          context,
+                          'صلاحية الموقع مرفوضة نهائيًا',
+                          'Location permission is permanently denied',
+                        )
                       : failure.kind == LocationFailureKind.serviceDisabled
-                          ? _text(context, 'خدمة الموقع مغلقة', 'Location services are disabled')
-                          : _text(context, 'تعذر تحديد موقعك', 'Unable to get your location'),
+                      ? _text(
+                          context,
+                          'خدمة الموقع مغلقة',
+                          'Location services are disabled',
+                        )
+                      : _text(
+                          context,
+                          'تعذر تحديد موقعك',
+                          'Unable to get your location',
+                        ),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.textPrimary,

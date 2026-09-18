@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
-import '../../domain/entities/location_entity.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../core/theme/app_text_styles.dart';
+import '../../../domain/entities/location_entity.dart';
 
 class LocationStatusCard extends StatelessWidget {
   const LocationStatusCard({
@@ -37,8 +37,8 @@ class LocationStatusCard extends StatelessWidget {
     final title = loading
         ? _text(context, 'جاري تحديد الموقع...', 'Checking location...')
         : insideZone
-            ? _text(context, 'التوصيل متاح', 'Delivery available')
-            : _text(context, 'خارج نطاق التوصيل', 'Out of delivery area');
+        ? _text(context, 'التوصيل متاح', 'Delivery available')
+        : _text(context, 'خارج نطاق التوصيل', 'Out of delivery area');
 
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
@@ -76,22 +76,25 @@ class LocationStatusCard extends StatelessWidget {
                   loading
                       ? Icons.location_searching_rounded
                       : insideZone
-                          ? Icons.check_circle_rounded
-                          : Icons.location_off_rounded,
+                      ? Icons.check_circle_rounded
+                      : Icons.location_off_rounded,
                   color: loading
                       ? AppColors.warning
                       : insideZone
-                          ? AppColors.success
-                          : AppColors.error,
+                      ? AppColors.success
+                      : AppColors.error,
                   size: 26,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(title, style: AppTextStyles.deliverySubtitle.copyWith(
-                    color: AppColors.textPrimary,
-                    fontSize: 19,
-                    fontWeight: FontWeight.w800,
-                  )),
+                  child: Text(
+                    title,
+                    style: AppTextStyles.deliverySubtitle.copyWith(
+                      color: AppColors.textPrimary,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
               ],
             ),

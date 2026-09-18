@@ -10,10 +10,7 @@ class FavoritesView extends StatelessWidget {
     final s = S.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: AppColors.background,
         centerTitle: false,
         title: Text(
           s.favorites,

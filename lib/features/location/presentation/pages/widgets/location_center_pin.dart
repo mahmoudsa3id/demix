@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../../core/theme/app_colors.dart';
 
 class LocationCenterPin extends StatelessWidget {
   const LocationCenterPin({super.key});
@@ -35,11 +35,7 @@ class LocationCenterPin extends StatelessWidget {
                   size: 25,
                 ),
               ),
-              Container(
-                width: 3,
-                height: 18,
-                color: AppColors.primary,
-              ),
+              Container(width: 3, height: 18, color: AppColors.primary),
             ],
           ),
         ),

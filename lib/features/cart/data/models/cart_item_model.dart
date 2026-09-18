@@ -3,29 +3,34 @@ import 'package:demix/features/cart/domain/entities/cart_item.dart';
 
 class CartItemModel extends CartItem {
   const CartItemModel({required super.product, required super.quantity});
+  @override
+  double get lineTotal => product.price * quantity;
 
-  factory CartItemModel.fromMap(Map<String, dynamic> map) {
+  factory CartItemModel.fromMap(Map<String, dynamic> data) {
     return CartItemModel(
       product: Product(
-        id: map['product_id'] as String,
-        businessId: map['business_id'] as String,
-        categoryId: map['category_id'] as String,
-        name: map['product_name'] as String,
-        nameAr: map['product_name_ar'] as String?,
-        nameEn: map['product_name_en'] as String?,
-        description: map['description'] as String?,
-        descriptionAr: map['description_ar'] as String?,
-        descriptionEn: map['description_en'] as String?,
-        imageUrl: map['image_url'] as String?,
-        price: (map['price'] as num).toDouble(),
-        isAvailable: (map['is_available'] as int? ?? 1) == 1,
-        sortOrder: map['sort_order'] as int? ?? 0,
+        id: data['product_id'] as String,
+        businessId: data['business_id'] as String,
+        categoryId: data['category_id'] as String,
+        name: data['product_name'] as String,
+        nameAr: data['product_name_ar'] as String?,
+        nameEn: data['product_name_en'] as String?,
+        description: data['description'] as String?,
+        descriptionAr: data['description_ar'] as String?,
+        descriptionEn: data['description_en'] as String?,
+        imageUrl: data['image_url'] as String?,
+        price: (data['price'] as num).toDouble(),
+        isAvailable: (data['is_available'] as int? ?? 1) == 1,
+        sortOrder: data['sort_order'] as int? ?? 0,
       ),
-      quantity: map['quantity'] as int,
+      quantity: data['quantity'] as int,
     );
   }
 
-  Map<String, dynamic> toMap({required Map<String, dynamic> business, int? now}) {
+  Map<String, dynamic> toMap({
+    required Map<String, dynamic> business,
+    int? now,
+  }) {
     final timestamp = now ?? DateTime.now().millisecondsSinceEpoch;
     return {
       'product_id': product.id,

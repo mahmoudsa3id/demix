@@ -1,4 +1,4 @@
-import 'package:demix/core/db/db_di.dart';
+import 'package:demix/core/di/db_di.dart';
 import 'package:demix/core/db/shared_preferance.dart';
 import 'package:demix/core/di/account_di.dart';
 import 'package:demix/core/di/auth_di.dart';

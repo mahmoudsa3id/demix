@@ -1,5 +1,5 @@
 import 'package:demix/core/routing/route_paths.dart';
-import 'package:demix/features/location/presentation/widgets/location_loading_view.dart';
+import 'package:demix/features/location/presentation/pages/widgets/location_loading_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -10,8 +10,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/location_coordinate.dart';
 import '../cubit/location_cubit.dart';
 import '../cubit/location_state.dart';
-import '../widgets/location_error_view.dart';
-import '../widgets/location_map.dart';
+import 'widgets/location_error_view.dart';
+import 'widgets/location_map.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key, required this.onConfirmed});

@@ -1,3 +1,5 @@
+import 'package:demix/features/orders/presentation/pages/widgets/section.dart';
+import 'package:demix/features/orders/presentation/pages/widgets/status_time_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:demix/features/orders/presentation/cubit/order_tracking_cubit.dart';
@@ -13,10 +15,12 @@ class OrderDetailsPage extends StatelessWidget {
       appBar: AppBar(title: const Text('تفاصيل الطلب')),
       body: BlocBuilder<OrderTrackingCubit, OrderTrackingState>(
         builder: (c, state) {
-          if (state is OrderTrackingLoading || state is OrderTrackingInitial)
+          if (state is OrderTrackingLoading || state is OrderTrackingInitial) {
             return const Center(child: CircularProgressIndicator());
-          if (state is OrderTrackingFailure)
+          }
+          if (state is OrderTrackingFailure) {
             return Center(child: Text(state.message));
+          }
           final d = (state as OrderTrackingLoaded).data;
           final status = d['status']?.toString() ?? 'pending';
           final total = (d['total'] as num?)?.toDouble() ?? 0;
@@ -48,12 +52,12 @@ class OrderDetailsPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _StatusTimeline(status: status),
+                    StatusTimeline(status: status),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
-              _Section(
+              Section(
                 title: 'المنتجات',
                 child: Container(
                   padding: const EdgeInsets.all(14),
@@ -109,7 +113,7 @@ class OrderDetailsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _Section(
+              Section(
                 title: 'التوصيل',
                 child: Container(
                   padding: const EdgeInsets.all(16),
@@ -158,105 +162,4 @@ class OrderDetailsPage extends StatelessWidget {
       ),
     ),
   );
-}
-
-class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child});
-  final String title;
-  final Widget child;
-  @override
-  Widget build(BuildContext c) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        title,
-        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
-      ),
-      const SizedBox(height: 9),
-      child,
-    ],
-  );
-}
-
-class _StatusTimeline extends StatelessWidget {
-  const _StatusTimeline({required this.status});
-  final String status;
-  @override
-  Widget build(BuildContext c) {
-    const statuses = [
-      'pending',
-      'accepted',
-      'preparing',
-      'outForDelivery',
-      'delivered',
-    ];
-    final current = statuses.indexOf(status);
-    return Column(
-      children: List.generate(statuses.length, (i) {
-        final active = current < 0 ? i == 0 : i <= current;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: active
-                        ? Theme.of(c).colorScheme.primary
-                        : Theme.of(c).colorScheme.surface,
-                    border: Border.all(
-                      color: active
-                          ? Theme.of(c).colorScheme.primary
-                          : Theme.of(c).colorScheme.outline,
-                      width: 2,
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: active
-                      ? Icon(
-                          Icons.check,
-                          size: 13,
-                          color: Theme.of(c).colorScheme.onPrimary,
-                        )
-                      : null,
-                ),
-                if (i < statuses.length - 1)
-                  Container(
-                    width: 2,
-                    height: 30,
-                    color: active
-                        ? Theme.of(c).colorScheme.primary
-                        : Theme.of(c).colorScheme.outlineVariant,
-                  ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            Padding(
-              padding: const EdgeInsets.only(top: 1),
-              child: Text(
-                _label(statuses[i]),
-                style: TextStyle(
-                  fontWeight: active ? FontWeight.w900 : FontWeight.w500,
-                  color: active
-                      ? null
-                      : Theme.of(c).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-          ],
-        );
-      }),
-    );
-  }
-
-  String _label(String x) => switch (x) {
-    'pending' => 'تم استلام الطلب',
-    'accepted' => 'المطعم قبل الطلب',
-    'preparing' => 'جاري التحضير',
-    'outForDelivery' => 'خرج للتوصيل',
-    'delivered' => 'تم التوصيل',
-    _ => x,
-  };
 }

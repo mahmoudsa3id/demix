@@ -45,7 +45,12 @@ class BusinessCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _BusinessLogo(imageUrl: business.logoUrl),
+              AppCachedImage(
+                imageUrl: business.logoUrl ?? '',
+                height: 80,
+                width: 80,
+                borderRadius: BorderRadius.circular(20),
+              ),
 
               const SizedBox(width: 12),
 
@@ -147,37 +152,6 @@ class BusinessCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _BusinessLogo extends StatelessWidget {
-  const _BusinessLogo({required this.imageUrl});
-
-  final String? imageUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 68,
-      height: 68,
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: imageUrl == null || imageUrl!.isEmpty
-          ? const Icon(
-              Icons.storefront_rounded,
-              size: 30,
-              color: AppColors.textSecondary,
-            )
-          : AppCachedImage(
-              imageUrl: imageUrl!,
-              width: 68,
-              height: 68,
-              fit: BoxFit.cover,
-            ),
     );
   }
 }

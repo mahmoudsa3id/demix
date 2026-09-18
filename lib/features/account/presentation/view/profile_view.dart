@@ -32,8 +32,9 @@ class ProfileView extends StatelessWidget {
         }
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          elevation: 5,
+          backgroundColor: Colors.white,
           title: Text(
             s.profile,
             style: TextStyle(
@@ -279,6 +280,7 @@ class ProfileView extends StatelessWidget {
                 Navigator.pop(dialogContext);
 
                 context.read<AuthCubit>().signOut();
+                context.go(RoutePaths.login);
               },
               child: Text(s.logout, style: const TextStyle(color: Colors.red)),
             ),

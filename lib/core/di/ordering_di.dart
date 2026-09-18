@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demix/features/orders/domain/use_cases/get_my_orders_use_case.dart';
+import 'package:demix/features/orders/presentation/cubit/orders_list_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../core/db/db.dart';
@@ -21,9 +23,9 @@ import '../../features/orders/presentation/cubit/order_cubit.dart';
 import '../../features/orders/presentation/cubit/order_tracking_cubit.dart';
 
 void setupOrderingDependencies(GetIt getIt) {
-  // ─────────────────────────────────────────────
+  // ============================================================
   // CART
-  // ─────────────────────────────────────────────
+  // ============================================================
 
   if (!getIt.isRegistered<CartLocalDataSource>()) {
     getIt.registerLazySingleton<CartLocalDataSource>(
@@ -61,6 +63,7 @@ void setupOrderingDependencies(GetIt getIt) {
     );
   }
 
+  // CartCubit is shared globally.
   if (!getIt.isRegistered<CartCubit>()) {
     getIt.registerLazySingleton<CartCubit>(
       () => CartCubit(
@@ -72,9 +75,9 @@ void setupOrderingDependencies(GetIt getIt) {
     );
   }
 
-  // ─────────────────────────────────────────────
+  // ============================================================
   // ORDERS
-  // ─────────────────────────────────────────────
+  // ============================================================
 
   if (!getIt.isRegistered<OrderRemoteDataSource>()) {
     getIt.registerLazySingleton<OrderRemoteDataSource>(
@@ -88,6 +91,10 @@ void setupOrderingDependencies(GetIt getIt) {
     );
   }
 
+  // ------------------------------------------------------------
+  // Create Order
+  // ------------------------------------------------------------
+
   if (!getIt.isRegistered<CreateOrderUseCase>()) {
     getIt.registerLazySingleton<CreateOrderUseCase>(
       () => CreateOrderUseCase(getIt<OrderRepository>()),
@@ -100,11 +107,43 @@ void setupOrderingDependencies(GetIt getIt) {
     );
   }
 
+  // ------------------------------------------------------------
+  // Watch Order
+  // ------------------------------------------------------------
+
   if (!getIt.isRegistered<WatchOrderUseCase>()) {
     getIt.registerLazySingleton<WatchOrderUseCase>(
       () => WatchOrderUseCase(getIt<OrderRepository>()),
     );
   }
+
+  // ------------------------------------------------------------
+  // Get My Orders
+  // ------------------------------------------------------------
+
+  if (!getIt.isRegistered<GetMyOrdersUseCase>()) {
+    getIt.registerLazySingleton<GetMyOrdersUseCase>(
+      () => GetMyOrdersUseCase(getIt<OrderRepository>()),
+    );
+  }
+
+  // IMPORTANT:
+  // OrdersListCubit MUST be Factory.
+  //
+  // BlocProvider owns this Cubit and may call close().
+  // Therefore we must NOT keep the same closed Cubit
+  // as a GetIt LazySingleton.
+  // ------------------------------------------------------------
+
+  if (!getIt.isRegistered<OrdersListCubit>()) {
+    getIt.registerFactory<OrdersListCubit>(
+      () => OrdersListCubit(getMyOrders: getIt<GetMyOrdersUseCase>()),
+    );
+  }
+
+  // ------------------------------------------------------------
+  // Order Tracking
+  // ------------------------------------------------------------
 
   if (!getIt.isRegistered<OrderTrackingCubit>()) {
     getIt.registerFactory<OrderTrackingCubit>(

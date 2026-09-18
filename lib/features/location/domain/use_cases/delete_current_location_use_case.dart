@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../core/errors/location_failure.dart';
+import '../../../../core/errors/location_failure.dart';
 import '../repositories/location_repository.dart';
 
 class DeleteCurrentLocationUseCase {

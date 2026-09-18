@@ -1,5 +1,6 @@
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/theme/app_radius.dart';
+import 'package:demix/core/widgets/app_cached_image.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,10 @@ class _ProductCardState extends State<ProductCard> {
                 SizedBox(
                   height: 80,
                   width: double.infinity,
-                  child: Image.network(widget.image, fit: BoxFit.cover),
+                  child: AppCachedImage(
+                    imageUrl: widget.image,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 4, 18, 0),

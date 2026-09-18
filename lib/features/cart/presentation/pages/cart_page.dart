@@ -1,4 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:demix/core/routing/navigation.dart';
+import 'package:demix/features/cart/presentation/pages/widgets/business_header.dart';
+import 'package:demix/features/cart/presentation/pages/widgets/cart_item_tile.dart';
+import 'package:demix/features/cart/presentation/pages/widgets/empty_card.dart';
+import 'package:demix/features/cart/presentation/pages/widgets/summary_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,23 +12,116 @@ import 'package:demix/features/checkout/presentation/pages/checkout_page.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
-  @override Widget build(BuildContext context){
-    final cart=context.watch<CartCubit>().state; final scheme=Theme.of(context).colorScheme;
-    return Scaffold(appBar:AppBar(title:const Text('السلة'),centerTitle:false),body:cart.items.isEmpty?_EmptyCart():CustomScrollView(slivers:[
-      SliverPadding(padding:const EdgeInsets.fromLTRB(16,8,16,150),sliver:SliverList(delegate:SliverChildListDelegate([
-        if(cart.business!=null)_RestaurantHeader(businessName:cart.business!.name,itemCount:cart.itemCount),
-        const SizedBox(height:14),
-        ...cart.items.map((item)=>Padding(padding:const EdgeInsets.only(bottom:10),child:_CartItemTile(item:item))),
-        const SizedBox(height:10),
-        Container(padding:const EdgeInsets.all(16),decoration:BoxDecoration(color:scheme.surfaceContainerHighest,borderRadius:BorderRadius.circular(22)),child:Column(children:[
-          _SummaryRow('المجموع الفرعي',cart.subtotal),_SummaryRow('التوصيل',cart.business?.deliveryFee??0),const Divider(height:24),_SummaryRow('الإجمالي',cart.subtotal+(cart.business?.deliveryFee??0),strong:true),
-        ])),
-      ]))),
-    ]),bottomNavigationBar:cart.items.isEmpty?null:SafeArea(child:Container(padding:const EdgeInsets.fromLTRB(16,10,16,12),decoration:BoxDecoration(color:scheme.surface,boxShadow:[BoxShadow(blurRadius:18,color:Colors.black.withOpacity(.08))]),child:FilledButton(onPressed:cart.business==null?null:()=>context.push(RoutePaths.checkout,extra:CheckoutArguments(business:cart.business!,items:cart.items)),child:Padding(padding:const EdgeInsets.symmetric(vertical:14),child:Row(mainAxisAlignment:MainAxisAlignment.center,children:[const Text('إتمام الطلب',style:TextStyle(fontWeight:FontWeight.w900)),const SizedBox(width:8),Text('${(cart.subtotal+(cart.business?.deliveryFee??0)).toStringAsFixed(0)} ج',style:const TextStyle(fontWeight:FontWeight.w900))]))))));
+  @override
+  Widget build(BuildContext context) {
+    final cart = context.watch<CartCubit>().state;
+    final scheme = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('السلة'),
+        centerTitle: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.pop();
+            },
+            icon: Icon(Icons.arrow_back_ios),
+          ),
+        ],
+      ),
+      body: cart.items.isEmpty
+          ? EmptyCart()
+          : CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 150),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      if (cart.business != null)
+                        BusinessHeader(
+                          businessName: cart.business!.name,
+                          itemCount: cart.itemCount,
+                          image: cart.business!.logoUrl!,
+                        ),
+                      const SizedBox(height: 14),
+                      ...cart.items.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: CartItemTile(item: item),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: scheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: Column(
+                          children: [
+                            SummaryRow('المجموع الفرعي', cart.subtotal),
+                            SummaryRow(
+                              'التوصيل',
+                              cart.business?.deliveryFee ?? 0,
+                            ),
+                            const Divider(height: 24),
+                            SummaryRow(
+                              'الإجمالي',
+                              cart.subtotal + (cart.business?.deliveryFee ?? 0),
+                              strong: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
+      bottomNavigationBar: cart.items.isEmpty
+          ? null
+          : SafeArea(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+                decoration: BoxDecoration(
+                  color: scheme.surface,
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 18,
+                      color: Colors.black.withOpacity(.08),
+                    ),
+                  ],
+                ),
+                child: FilledButton(
+                  onPressed: cart.business == null
+                      ? null
+                      : () => context.push(
+                          RoutePaths.checkout,
+                          extra: CheckoutArguments(
+                            business: cart.business!,
+                            items: cart.items,
+                          ),
+                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'إتمام الطلب',
+                          style: TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${(cart.subtotal + (cart.business?.deliveryFee ?? 0)).toStringAsFixed(0)} ج',
+                          style: const TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+    );
   }
 }
-class _RestaurantHeader extends StatelessWidget{const _RestaurantHeader({required this.businessName,required this.itemCount});final String businessName;final int itemCount;@override Widget build(BuildContext c){final s=Theme.of(c).colorScheme;return Container(padding:const EdgeInsets.all(16),decoration:BoxDecoration(color:s.primaryContainer,borderRadius:BorderRadius.circular(22)),child:Row(children:[Container(width:44,height:44,decoration:BoxDecoration(color:s.primary,shape:BoxShape.circle),child:Icon(Icons.restaurant_rounded,color:s.onPrimary)),const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(businessName,style:const TextStyle(fontWeight:FontWeight.w900)),const SizedBox(height:3),Text('$itemCount قطعة في السلة',style:TextStyle(fontSize:12,color:s.onSurfaceVariant))]))]));}}
-class _CartItemTile extends StatelessWidget{const _CartItemTile({required this.item});final dynamic item;@override Widget build(BuildContext c){final cart=c.read<CartCubit>();final s=Theme.of(c).colorScheme;return Dismissible(key:ValueKey(item.product.id),direction:DismissDirection.endToStart,onDismissed:(_)=>cart.remove(item.product.id),background:Container(alignment:AlignmentDirectional.centerEnd,padding:const EdgeInsets.symmetric(horizontal:20),decoration:BoxDecoration(color:s.errorContainer,borderRadius:BorderRadius.circular(22)),child:Icon(Icons.delete_outline,color:s.onErrorContainer)),child:Container(padding:const EdgeInsets.all(10),decoration:BoxDecoration(color:s.surface,borderRadius:BorderRadius.circular(22),border:Border.all(color:s.outlineVariant)),child:Row(children:[ClipRRect(borderRadius:BorderRadius.circular(16),child:SizedBox(width:86,height:86,child:item.product.imageUrl==null||item.product.imageUrl!.isEmpty?Container(color:s.surfaceContainerHighest,child:Icon(Icons.fastfood_rounded,color:s.primary)):CachedNetworkImage(imageUrl:item.product.imageUrl!,fit:BoxFit.cover))),const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(item.product.name,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontWeight:FontWeight.w900)),const SizedBox(height:5),Text('${item.product.price.toStringAsFixed(0)} ج',style:TextStyle(color:s.primary,fontWeight:FontWeight.w900)),const SizedBox(height:10),Row(children:[_Q(icon:Icons.remove_rounded,onTap:()=>cart.decrease(item.product.id)),Padding(padding:const EdgeInsets.symmetric(horizontal:13),child:Text('${item.quantity}',style:const TextStyle(fontWeight:FontWeight.w900))),_Q(icon:Icons.add_rounded,onTap:()=>cart.increase(item.product.id)),const Spacer(),Text('${item.lineTotal.toStringAsFixed(0)} ج',style:const TextStyle(fontWeight:FontWeight.w900))])]))])));}}
-class _Q extends StatelessWidget{const _Q({required this.icon,required this.onTap});final IconData icon;final VoidCallback onTap;@override Widget build(BuildContext c){final s=Theme.of(c).colorScheme;return InkWell(onTap:onTap,borderRadius:BorderRadius.circular(10),child:Container(width:30,height:30,decoration:BoxDecoration(color:s.surfaceContainerHighest,borderRadius:BorderRadius.circular(10)),child:Icon(icon,size:18,color:s.primary)));}}
-class _SummaryRow extends StatelessWidget{const _SummaryRow(this.title,this.value,{this.strong=false});final String title;final double value;final bool strong;@override Widget build(BuildContext c)=>Padding(padding:const EdgeInsets.symmetric(vertical:5),child:Row(children:[Text(title,style:TextStyle(fontWeight:strong?FontWeight.w900:FontWeight.w500)),const Spacer(),Text('${value.toStringAsFixed(0)} ج',style:TextStyle(fontWeight:strong?FontWeight.w900:FontWeight.w700))]));}
-class _EmptyCart extends StatelessWidget{@override Widget build(BuildContext c){final s=Theme.of(c).colorScheme;return Center(child:Padding(padding:const EdgeInsets.all(30),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[Container(width:92,height:92,decoration:BoxDecoration(color:s.primaryContainer,shape:BoxShape.circle),child:Icon(Icons.shopping_bag_outlined,size:44,color:s.primary)),const SizedBox(height:20),const Text('السلة لسه فاضية',style:TextStyle(fontSize:22,fontWeight:FontWeight.w900)),const SizedBox(height:8),Text('اختار أكلك المفضل من المطاعم وأضفه للسلة.',textAlign:TextAlign.center,style:TextStyle(color:s.onSurfaceVariant)),const SizedBox(height:24),FilledButton(onPressed:()=>c.go(RoutePaths.home),child:const Text('اكتشف المطاعم'))])));}}

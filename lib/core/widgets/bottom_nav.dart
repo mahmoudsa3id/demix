@@ -7,67 +7,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class BottomNav extends StatefulWidget {
+class BottomNav extends StatelessWidget {
   const BottomNav({super.key, required this.s});
 
   final S s;
-
-  @override
-  State<BottomNav> createState() => _BottomNavState();
-}
-
-class _BottomNavState extends State<BottomNav> {
-  int _selectedNav = 0;
 
   List<String> get _routes => [
     RoutePaths.home,
     RoutePaths.orders,
     RoutePaths.favorites,
     RoutePaths.cart,
-    RoutePaths.profile,
   ];
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
+  int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
 
     final index = _routes.indexOf(location);
 
-    if (index != -1 && index != _selectedNav) {
-      _selectedNav = index;
-    }
+    return index == -1 ? 0 : index;
   }
 
-  void _onItemTap(int index) {
-    if (_selectedNav == index) {
+  void _onItemTap(BuildContext context, int index) {
+    final currentIndex = _currentIndex(context);
+
+    if (currentIndex == index) {
       return;
     }
 
-    setState(() {
-      _selectedNav = index;
-    });
-
+    // خلي GoRouter هو المسؤول عن تغيير الـ route.
+    // ممنوع setState هنا.
     context.go(_routes[index]);
   }
 
   @override
   Widget build(BuildContext context) {
-    final labels = [
-      widget.s.home,
-      widget.s.orders,
-      widget.s.favorites,
-      widget.s.cart,
-      widget.s.profile,
-    ];
+    final selectedIndex = _currentIndex(context);
+
+    final labels = [s.home, s.orders, s.favorites, s.cart];
 
     final icons = [
       Icons.home_rounded,
       Icons.shopping_bag_outlined,
       Icons.favorite_border_rounded,
       Icons.shopping_cart_outlined,
-      Icons.person_outline_rounded,
     ];
 
     return SafeArea(
@@ -88,11 +70,11 @@ class _BottomNavState extends State<BottomNav> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(labels.length, (i) {
-            final active = _selectedNav == i;
+            final active = selectedIndex == i;
 
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () => _onItemTap(i),
+              onTap: () => _onItemTap(context, i),
               child: SizedBox(
                 width: 55,
                 child: Column(

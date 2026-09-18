@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/location_coordinate.dart';
-import '../../domain/entities/service_zone.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../domain/entities/location_coordinate.dart';
+import '../../../domain/entities/service_zone.dart';
 import 'location_center_pin.dart';
 
 class LocationMap extends StatelessWidget {

@@ -1,4 +1,4 @@
-import '../../core/errors/location_failure.dart';
+import '../../../../core/errors/location_failure.dart';
 import '../../domain/entities/location_coordinate.dart';
 import '../../domain/entities/location_entity.dart';
 import '../../domain/entities/service_zone.dart';

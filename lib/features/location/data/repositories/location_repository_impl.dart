@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
-import '../../core/errors/location_failure.dart';
+import '../../../../core/errors/location_failure.dart';
 import '../../domain/entities/location_coordinate.dart';
 import '../../domain/entities/location_entity.dart';
 import '../../domain/entities/service_zone.dart';

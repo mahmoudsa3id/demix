@@ -1,3 +1,50 @@
-import 'package:firebase_auth/firebase_auth.dart';import 'package:flutter_bloc/flutter_bloc.dart';import 'package:cloud_firestore/cloud_firestore.dart';import '../../domain/use_cases/get_my_orders_use_case.dart';
-sealed class OrdersListState{const OrdersListState();}class OrdersListInitial extends OrdersListState{const OrdersListInitial();}class OrdersListLoading extends OrdersListState{const OrdersListLoading();}class OrdersListLoaded extends OrdersListState{const OrdersListLoaded(this.orders);final List<DocumentSnapshot<Map<String,dynamic>>> orders;}class OrdersListEmpty extends OrdersListState{const OrdersListEmpty();}class OrdersListFailure extends OrdersListState{const OrdersListFailure(this.message);final String message;}
-class OrdersListCubit extends Cubit<OrdersListState>{OrdersListCubit({required GetMyOrdersUseCase getMyOrders}):_getMyOrders=getMyOrders,super(const OrdersListInitial());final GetMyOrdersUseCase _getMyOrders;Future<void> load()async{final user=FirebaseAuth.instance.currentUser;if(user==null){emit(const OrdersListFailure('Please sign in first.'));return;}emit(const OrdersListLoading());try{final x=await _getMyOrders(user.uid);emit(x.isEmpty?const OrdersListEmpty():OrdersListLoaded(x));}catch(e){emit(OrdersListFailure(e.toString()));}}}
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../domain/use_cases/get_my_orders_use_case.dart';
+
+sealed class OrdersListState {
+  const OrdersListState();
+}
+
+class OrdersListInitial extends OrdersListState {
+  const OrdersListInitial();
+}
+
+class OrdersListLoading extends OrdersListState {
+  const OrdersListLoading();
+}
+
+class OrdersListLoaded extends OrdersListState {
+  const OrdersListLoaded(this.orders);
+  final List<DocumentSnapshot<Map<String, dynamic>>> orders;
+}
+
+class OrdersListEmpty extends OrdersListState {
+  const OrdersListEmpty();
+}
+
+class OrdersListFailure extends OrdersListState {
+  const OrdersListFailure(this.message);
+  final String message;
+}
+
+class OrdersListCubit extends Cubit<OrdersListState> {
+  OrdersListCubit({required this._getMyOrders})
+    : super(const OrdersListInitial());
+  final GetMyOrdersUseCase _getMyOrders;
+  Future<void> load() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      emit(const OrdersListFailure('Please sign in first.'));
+      return;
+    }
+    emit(const OrdersListLoading());
+    try {
+      final x = await _getMyOrders(user.uid);
+      emit(x.isEmpty ? const OrdersListEmpty() : OrdersListLoaded(x));
+    } catch (e) {
+      emit(OrdersListFailure(e.toString()));
+    }
+  }
+}

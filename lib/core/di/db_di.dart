@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 
-import 'db.dart';
+import '../db/db.dart';
 
 void setupDatabaseDependencies(GetIt getIt) {
   if (!getIt.isRegistered<AppDatabase>()) {

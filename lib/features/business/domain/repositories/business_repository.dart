@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:demix/features/business/data/models/business_model.dart';
 import 'package:demix/features/business/domain/entities/business.dart';
 import 'package:demix/features/business/domain/entities/business_page.dart';
 import 'package:demix/features/business/domain/entities/product.dart';

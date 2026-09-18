@@ -3,10 +3,6 @@ import 'package:demix/features/business/data/models/business_model.dart';
 import 'package:demix/features/business/data/models/product_category_model.dart';
 import 'package:demix/features/business/data/models/product_model.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:demix/features/business/data/models/business_model.dart';
-import 'package:demix/features/business/data/models/product_category_model.dart';
-import 'package:demix/features/business/data/models/product_model.dart';
 import 'package:demix/features/business/domain/entities/business_page.dart';
 
 abstract class BusinessRemoteDataSource {
@@ -33,8 +29,7 @@ abstract class BusinessRemoteDataSource {
 }
 
 class FirebaseBusinessRemoteDataSource implements BusinessRemoteDataSource {
-  FirebaseBusinessRemoteDataSource({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  FirebaseBusinessRemoteDataSource({required this._firestore});
 
   final FirebaseFirestore _firestore;
   @override

@@ -1,7 +1,3 @@
-import 'dart:ui';
-
-import 'package:demix/core/localization/locale_controller.dart';
-import 'package:demix/core/routing/navigation.dart';
 import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/utils/helper/helper_widgets.dart';
@@ -128,55 +124,60 @@ class HomeViewHeader extends StatelessWidget {
 
           const SizedBox(width: 5),
 
-          Container(
-            width: 40,
-            height: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.white,
-              border: Border.all(color: AppColors.border),
-            ),
-            child: BlocBuilder<AuthCubit, AuthState>(
-              builder: (context, state) {
-                // Auth is not resolved yet → show nothing.
-                if (state is AuthInitial || state is AuthLoading) {
-                  return const SizedBox(width: 40, height: 40);
-                }
-
-                if (state is Authenticated) {
-                  final imageUrl = state.session.avatarUrl?.trim() ?? '';
-
-                  if (imageUrl.isEmpty) {
+          GestureDetector(
+            onTap: () {
+              context.push(RoutePaths.profile);
+            },
+            child: Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.white,
+                border: Border.all(color: AppColors.border),
+              ),
+              child: BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, state) {
+                  // Auth is not resolved yet → show nothing.
+                  if (state is AuthInitial || state is AuthLoading) {
                     return const SizedBox(width: 40, height: 40);
                   }
 
-                  return ClipOval(
-                    child: AppCachedImage(
-                      imageUrl: imageUrl,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                }
+                  if (state is Authenticated) {
+                    final imageUrl = state.session.avatarUrl?.trim() ?? '';
 
-                if (state is GuestSession) {
-                  const guestAvatarUrl =
-                      'https://api.dicebear.com/9.x/avataaars/png?seed=Guest';
+                    if (imageUrl.isEmpty) {
+                      return const SizedBox(width: 40, height: 40);
+                    }
 
-                  return ClipOval(
-                    child: AppCachedImage(
-                      imageUrl: guestAvatarUrl,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                }
+                    return ClipOval(
+                      child: AppCachedImage(
+                        imageUrl: imageUrl,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  }
 
-                return const SizedBox(width: 40, height: 40);
-              },
+                  if (state is GuestSession) {
+                    const guestAvatarUrl =
+                        'https://api.dicebear.com/9.x/avataaars/png?seed=Guest';
+
+                    return ClipOval(
+                      child: AppCachedImage(
+                        imageUrl: guestAvatarUrl,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  }
+
+                  return const SizedBox(width: 40, height: 40);
+                },
+              ),
             ),
           ),
         ],

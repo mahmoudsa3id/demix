@@ -1,2 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';import 'package:demix/features/orders/data/datasources/order_remote_data_source.dart';import 'package:demix/features/orders/domain/entities/order_entity.dart';import 'package:demix/features/orders/domain/repositories/order_repository.dart';
-class OrderRepositoryImpl implements OrderRepository{OrderRepositoryImpl({required OrderRemoteDataSource remote}):_remote=remote;final OrderRemoteDataSource _remote;@override Future<String> createOrder(OrderEntity order)=>_remote.createOrder(order);@override Stream<DocumentSnapshot<Map<String,dynamic>>> watchOrder(String id)=>_remote.watchOrder(id);@override Future<List<DocumentSnapshot<Map<String,dynamic>>>> getMyOrders(String userId)=>_remote.getMyOrders(userId);}
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demix/features/orders/data/datasources/order_remote_data_source.dart';
+import 'package:demix/features/orders/domain/entities/order_entity.dart';
+import 'package:demix/features/orders/domain/repositories/order_repository.dart';
+
+class OrderRepositoryImpl implements OrderRepository {
+  OrderRepositoryImpl({required this._remote});
+  final OrderRemoteDataSource _remote;
+  @override
+  Future<String> createOrder(OrderEntity order) => _remote.createOrder(order);
+  @override
+  Stream<DocumentSnapshot<Map<String, dynamic>>> watchOrder(String id) =>
+      _remote.watchOrder(id);
+  @override
+  Future<List<DocumentSnapshot<Map<String, dynamic>>>> getMyOrders(
+    String userId,
+  ) => _remote.getMyOrders(userId);
+}

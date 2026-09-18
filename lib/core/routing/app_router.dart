@@ -1,4 +1,6 @@
+import 'package:demix/core/routing/navigation.dart';
 import 'package:demix/core/routing/route_paths.dart';
+import 'package:demix/core/widgets/bottom_nav.dart';
 import 'package:demix/features/account/presentation/view/about_view.dart';
 import 'package:demix/features/account/presentation/view/edit_profile_view.dart';
 import 'package:demix/features/account/presentation/view/language_view.dart';
@@ -11,40 +13,26 @@ import 'package:demix/features/account/presentation/view/terms_view.dart';
 import 'package:demix/features/auth/presentation/views/forget_password_view.dart';
 import 'package:demix/features/auth/presentation/views/login_view.dart';
 import 'package:demix/features/auth/presentation/views/sign_up_view.dart';
-
-import 'package:demix/core/di/location_di.dart';
-
-import 'package:demix/features/business/presentation/pages/category_view.dart';
 import 'package:demix/features/business/presentation/pages/business_profile_page.dart';
+import 'package:demix/features/business/presentation/pages/category_view.dart';
+import 'package:demix/features/cart/presentation/pages/cart_page.dart';
+import 'package:demix/features/checkout/presentation/pages/checkout_location_picker_page.dart';
+import 'package:demix/features/checkout/presentation/pages/checkout_page.dart';
 import 'package:demix/features/favorite/presentation/view/favorite_view.dart';
-
+import 'package:demix/features/home/presentation/views/home_view.dart';
 import 'package:demix/features/location/presentation/cubit/location_cubit.dart';
 import 'package:demix/features/location/presentation/pages/location_page.dart';
-
 import 'package:demix/features/onboarding/presentation/onboarding_view.dart';
-
-import 'package:demix/features/product_ordering/presentation/pages/product_details_page.dart';
-
-import 'package:demix/features/cart/presentation/pages/cart_page.dart';
-
-import 'package:demix/features/checkout/presentation/pages/checkout_page.dart';
-import 'package:demix/features/checkout/presentation/pages/checkout_location_picker_page.dart';
-
-import 'package:demix/features/orders/presentation/pages/order_success_page.dart';
 import 'package:demix/features/orders/presentation/pages/order_details_page.dart';
-
+import 'package:demix/features/orders/presentation/pages/order_success_page.dart';
+import 'package:demix/features/orders/presentation/pages/orders_page.dart';
+import 'package:demix/features/product_ordering/presentation/pages/product_details_page.dart';
+import 'package:demix/features/splash/presentation/views/splash_view.dart';
+import 'package:demix/generated/l10n.dart';
 import 'package:demix/main.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:demix/generated/l10n.dart';
-
-import 'package:demix/core/routing/navigation.dart';
-
-import 'package:demix/features/splash/presentation/views/splash_view.dart';
-import 'package:demix/features/home/presentation/views/home_view.dart';
 
 class AppRouter {
   AppRouter._();
@@ -70,21 +58,76 @@ class AppRouter {
             return const SplashView();
           },
         ),
-        GoRoute(
-          path: RoutePaths.favorites,
-          builder: (context, state) {
-            return const FavoritesView();
+
+        // ============================================================
+        // MAIN APP
+        // Bottom Navigation
+        // ============================================================
+        ShellRoute(
+          builder: (context, state, child) {
+            return Scaffold(
+              body: child,
+              bottomNavigationBar: BottomNav(s: S.of(context)),
+            );
           },
-        ),
-        GoRoute(
-          path: RoutePaths.profile,
-          builder: (context, state) {
-            return const ProfileView();
-          },
+          routes: [
+            // ========================================================
+            // HOME
+            // ========================================================
+            GoRoute(
+              path: RoutePaths.home,
+              name: 'home',
+              builder: (context, state) {
+                return const HomeView();
+              },
+            ),
+
+            // ========================================================
+            // ORDERS
+            // ========================================================
+            GoRoute(
+              path: RoutePaths.orders,
+              name: 'orders',
+              builder: (context, state) {
+                return const OrdersPage();
+              },
+            ),
+
+            // ========================================================
+            // FAVORITES
+            // ========================================================
+            GoRoute(
+              path: RoutePaths.favorites,
+              name: 'favorites',
+              builder: (context, state) {
+                return const FavoritesView();
+              },
+            ),
+
+            // ========================================================
+            // CART
+            // ========================================================
+            GoRoute(
+              path: RoutePaths.cart,
+              name: 'cart',
+              builder: (context, state) {
+                return const CartPage();
+              },
+            ),
+
+            // ========================================================
+            // PROFILE
+            // ========================================================
+          ],
         ),
 
+        // ============================================================
+        // ACCOUNT
+        // These pages intentionally have NO BottomNav
+        // ============================================================
         GoRoute(
           path: RoutePaths.editProfile,
+          name: 'edit-profile',
           builder: (context, state) {
             return const EditProfileView();
           },
@@ -92,6 +135,7 @@ class AppRouter {
 
         GoRoute(
           path: RoutePaths.settings,
+          name: 'settings',
           builder: (context, state) {
             return const SettingsView();
           },
@@ -99,13 +143,22 @@ class AppRouter {
 
         GoRoute(
           path: RoutePaths.language,
+          name: 'language',
           builder: (context, state) {
             return const LanguageView();
+          },
+        ),
+        GoRoute(
+          path: RoutePaths.profile,
+          name: 'profile',
+          builder: (context, state) {
+            return ProfileView();
           },
         ),
 
         GoRoute(
           path: RoutePaths.notifications,
+          name: 'notifications',
           builder: (context, state) {
             return const NotificationsView();
           },
@@ -113,6 +166,7 @@ class AppRouter {
 
         GoRoute(
           path: RoutePaths.privacy,
+          name: 'privacy',
           builder: (context, state) {
             return const PrivacyView();
           },
@@ -120,6 +174,7 @@ class AppRouter {
 
         GoRoute(
           path: RoutePaths.terms,
+          name: 'terms',
           builder: (context, state) {
             return const TermsView();
           },
@@ -127,6 +182,7 @@ class AppRouter {
 
         GoRoute(
           path: RoutePaths.support,
+          name: 'support',
           builder: (context, state) {
             return const SupportView();
           },
@@ -134,6 +190,7 @@ class AppRouter {
 
         GoRoute(
           path: RoutePaths.about,
+          name: 'about',
           builder: (context, state) {
             return const AboutView();
           },
@@ -141,7 +198,6 @@ class AppRouter {
 
         // ============================================================
         // BUSINESS CATEGORY
-        // Restaurants / Cafes
         // ============================================================
         GoRoute(
           path: RoutePaths.category,
@@ -180,17 +236,6 @@ class AppRouter {
         ),
 
         // ============================================================
-        // CART
-        // ============================================================
-        GoRoute(
-          path: RoutePaths.cart,
-          name: 'cart',
-          builder: (context, state) {
-            return const CartPage();
-          },
-        ),
-
-        // ============================================================
         // CHECKOUT
         // ============================================================
         GoRoute(
@@ -205,7 +250,6 @@ class AppRouter {
 
         // ============================================================
         // CHECKOUT LOCATION
-        // Uses the existing Location Feature
         // ============================================================
         GoRoute(
           path: RoutePaths.checkoutLocation,
@@ -222,7 +266,7 @@ class AppRouter {
           path: RoutePaths.location,
           name: 'location',
           builder: (context, state) {
-            return BlocProvider(
+            return BlocProvider<LocationCubit>(
               create: (_) => getIt<LocationCubit>()..initialize(),
               child: LocationPage(
                 onConfirmed: () async {
@@ -240,7 +284,7 @@ class AppRouter {
         // ============================================================
         GoRoute(
           path: RoutePaths.onboarding,
-          name: 'onBoarding',
+          name: 'onboarding',
           builder: (context, state) {
             return const OnboardingView();
           },
@@ -261,26 +305,15 @@ class AppRouter {
           path: RoutePaths.signup,
           name: 'signup',
           builder: (context, state) {
-            return SignupView();
+            return const SignupView();
           },
         ),
 
         GoRoute(
           path: RoutePaths.forgotPassword,
-          name: 'forget-passowrd',
+          name: 'forgot-password',
           builder: (context, state) {
             return ForgotPasswordPage();
-          },
-        ),
-
-        // ============================================================
-        // HOME
-        // ============================================================
-        GoRoute(
-          path: RoutePaths.home,
-          name: 'home',
-          builder: (context, state) {
-            return const HomeView();
           },
         ),
 
@@ -300,7 +333,7 @@ class AppRouter {
         ),
 
         // ============================================================
-        // ORDER DETAILS / TRACKING
+        // ORDER DETAILS
         // ============================================================
         GoRoute(
           path: RoutePaths.orderDetailsById,
@@ -315,42 +348,6 @@ class AppRouter {
         // ============================================================
         // INFORMATION
         // ============================================================
-        GoRoute(
-          path: RoutePaths.notifications,
-          name: 'notifications',
-          builder: (context, state) {
-            return InformationView(
-              title: S.of(context).notifications,
-              description: S.of(context).notifications,
-              icon: Icons.notifications_none_rounded,
-            );
-          },
-        ),
-
-        GoRoute(
-          path: RoutePaths.privacy,
-          name: 'privacy',
-          builder: (context, state) {
-            return InformationView(
-              title: S.of(context).privacy,
-              description: S.of(context).privacy,
-              icon: Icons.shield_outlined,
-            );
-          },
-        ),
-
-        GoRoute(
-          path: RoutePaths.terms,
-          name: 'terms',
-          builder: (context, state) {
-            return InformationView(
-              title: S.of(context).terms,
-              description: S.of(context).terms,
-              icon: Icons.description_outlined,
-            );
-          },
-        ),
-
         GoRoute(
           path: RoutePaths.offers,
           name: 'offers',

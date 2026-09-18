@@ -71,18 +71,11 @@ class _EditProfileViewState extends State<EditProfileView> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
         appBar: AppBar(
-          backgroundColor: AppColors.background,
-          surfaceTintColor: Colors.transparent,
           elevation: 0,
           title: Text(
             s.editProfile,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
           ),
         ),
         body: SafeArea(
@@ -91,24 +84,6 @@ class _EditProfileViewState extends State<EditProfileView> {
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                Center(
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary.withOpacity(.10),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.person_outline_rounded,
-                      size: 45,
-                      color: AppColors.secondary,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 35),
-
                 TextFormField(
                   controller: _nameController,
                   textInputAction: TextInputAction.next,
