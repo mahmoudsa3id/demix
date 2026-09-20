@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class AccountPageShell extends StatelessWidget {
-  const AccountPageShell({
+class AccountViewShell extends StatelessWidget {
+  const AccountViewShell({
     super.key,
     required this.title,
     required this.slivers,

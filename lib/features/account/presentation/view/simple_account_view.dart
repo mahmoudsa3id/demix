@@ -1,5 +1,5 @@
 import 'package:demix/core/theme/app_colors.dart';
-import 'package:demix/features/account/presentation/view/account_page_shell.dart';
+import 'package:demix/features/account/presentation/view/account_view_shell.dart';
 import 'package:flutter/material.dart';
 
 class SimpleAccountPage extends StatelessWidget {
@@ -16,7 +16,7 @@ class SimpleAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AccountPageShell(
+    return AccountViewShell(
       title: title,
       slivers: [
         SliverPadding(

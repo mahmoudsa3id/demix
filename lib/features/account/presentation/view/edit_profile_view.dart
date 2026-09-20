@@ -1,7 +1,7 @@
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/features/account/presentation/cubit/account_cubit.dart';
 import 'package:demix/features/account/presentation/cubit/account_state.dart';
-import 'package:demix/features/account/presentation/view/account_page_shell.dart';
+import 'package:demix/features/account/presentation/view/account_view_shell.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,7 +70,7 @@ class _EditProfileViewState extends State<EditProfileView> {
           ).showSnackBar(SnackBar(content: Text(state.failure.message)));
         }
       },
-      child: AccountPageShell(
+      child: AccountViewShell(
         title: s.editProfile,
         slivers: [
           SliverPadding(

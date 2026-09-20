@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class CategoryView extends StatelessWidget {
-  const CategoryView({super.key, required this.type});
+class BusinessView extends StatelessWidget {
+  const BusinessView({super.key, required this.type});
 
   final String type;
 

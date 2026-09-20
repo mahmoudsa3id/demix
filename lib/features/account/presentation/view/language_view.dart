@@ -1,6 +1,6 @@
 import 'package:demix/core/localization/locale_controller.dart';
 import 'package:demix/core/theme/app_colors.dart';
-import 'package:demix/features/account/presentation/view/account_page_shell.dart';
+import 'package:demix/features/account/presentation/view/account_view_shell.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +24,7 @@ class LanguageView extends StatelessWidget {
     final s = S.of(context);
     final currentLanguage = Localizations.localeOf(context).languageCode;
 
-    return AccountPageShell(
+    return AccountViewShell(
       title: s.language,
       slivers: [
         SliverPadding(

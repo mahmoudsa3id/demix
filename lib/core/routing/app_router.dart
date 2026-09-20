@@ -21,7 +21,7 @@ import 'package:demix/features/business/presentation/cubit/business_profile_cubi
 import 'package:demix/features/business/presentation/cubit/business_profile_state.dart';
 
 import 'package:demix/features/business/presentation/pages/business_profile_page.dart';
-import 'package:demix/features/business/presentation/pages/category_view.dart';
+import 'package:demix/features/business/presentation/pages/business_view.dart';
 
 import 'package:demix/features/cart/presentation/pages/cart_page.dart';
 
@@ -39,8 +39,8 @@ import 'package:demix/features/location/presentation/views/saved_location_page.d
 
 import 'package:demix/features/onboarding/presentation/onboarding_view.dart';
 
-import 'package:demix/features/orders/presentation/pages/order_details_page.dart';
-import 'package:demix/features/orders/presentation/pages/order_success_page.dart';
+import 'package:demix/features/orders/presentation/pages/order_details_view.dart';
+import 'package:demix/features/orders/presentation/pages/order_success_view.dart';
 import 'package:demix/features/orders/presentation/pages/orders_view.dart';
 
 import 'package:demix/features/product_ordering/presentation/pages/product_details_page.dart';
@@ -294,10 +294,7 @@ class AppRouter {
               path: RoutePaths.orders,
               name: 'orders',
               pageBuilder: (context, state) {
-                return _animatedPage(
-                  state: state,
-                  child: const OrdersViewBody(),
-                );
+                return _animatedPage(state: state, child: const OrdersView());
               },
             ),
 
@@ -441,7 +438,7 @@ class AppRouter {
 
             return _animatedPage(
               state: state,
-              child: CategoryView(type: type),
+              child: BusinessView(type: type),
             );
           },
         ),
@@ -457,7 +454,7 @@ class AppRouter {
 
             return _animatedPage(
               state: state,
-              child: BusinessProfilePage(businessId: restaurantId),
+              child: BusinessProfileView(businessId: restaurantId),
             );
           },
         ),
@@ -467,7 +464,7 @@ class AppRouter {
           pageBuilder: (context, state) {
             return _animatedPage(
               state: state,
-              child: const SavedLocationsPage(),
+              child: const SavedLocationsView(),
             );
           },
         ),

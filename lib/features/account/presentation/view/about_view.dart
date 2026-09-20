@@ -1,5 +1,5 @@
 import 'package:demix/core/theme/app_colors.dart';
-import 'package:demix/features/account/presentation/view/account_page_shell.dart';
+import 'package:demix/features/account/presentation/view/account_view_shell.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +10,7 @@ class AboutView extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = S.of(context);
 
-    return AccountPageShell(
+    return AccountViewShell(
       title: s.about,
       slivers: [
         SliverPadding(
