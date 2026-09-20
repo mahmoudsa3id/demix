@@ -4,6 +4,7 @@ import 'package:demix/core/utils/helper/helper_widgets.dart';
 import 'package:demix/core/widgets/app_cached_image.dart';
 import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:demix/features/auth/presentation/cubit/auth_state.dart';
+import 'package:demix/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:demix/features/home/presentation/views/widgets/demix_logo.dart';
 import 'package:demix/features/location/presentation/cubit/saved_location_cubit.dart';
 import 'package:demix/generated/l10n.dart';
@@ -124,63 +125,101 @@ class HomeViewHeader extends StatelessWidget {
 
           const SizedBox(width: 5),
 
-          GestureDetector(
-            onTap: () {
-              context.push(RoutePaths.profile);
-            },
-            child: Container(
-              width: 40,
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.white,
-                border: Border.all(color: AppColors.border),
-              ),
-              child: BlocBuilder<AuthCubit, AuthState>(
+          Stack(
+            children: [
+              BlocBuilder<CartCubit, CartState>(
+                buildWhen: (previous, current) =>
+                    previous.items != current.items,
                 builder: (context, state) {
-                  // Auth is not resolved yet → show nothing.
-                  if (state is AuthInitial || state is AuthLoading) {
-                    return const SizedBox(width: 40, height: 40);
+                  final count = state.items.fold<int>(
+                    0,
+                    (sum, item) => sum + item.quantity,
+                  );
+
+                  if (count <= 0) {
+                    return const SizedBox.shrink();
                   }
 
-                  if (state is Authenticated) {
-                    final imageUrl = state.session.avatarUrl?.trim() ?? '';
-
-                    if (imageUrl.isEmpty) {
-                      return const SizedBox(width: 40, height: 40);
-                    }
-
-                    return ClipOval(
-                      child: AppCachedImage(
-                        imageUrl: imageUrl,
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  }
-
-                  if (state is GuestSession) {
-                    const guestAvatarUrl =
-                        'https://api.dicebear.com/9.x/avataaars/png?seed=Guest';
-
-                    return ClipOval(
-                      child: AppCachedImage(
-                        imageUrl: guestAvatarUrl,
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  }
-
-                  return const SizedBox(width: 40, height: 40);
+                  return Positioned(
+                    right: 1,
+                    top: 1,
+                    child: badge(count > 99 ? '99+' : '$count'),
+                  );
                 },
               ),
-            ),
+              GestureDetector(
+                onTap: () {
+                  context.push(RoutePaths.profile);
+                },
+                child: IconButton(
+                  onPressed: () {
+                    context.push(RoutePaths.cart);
+                  },
+                  icon: Icon(Icons.shopping_cart),
+                ),
+              ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AccountPhotoBlocBuilder extends StatelessWidget {
+  const AccountPhotoBlocBuilder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.white,
+        border: Border.all(color: AppColors.border),
+      ),
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          // Auth is not resolved yet → show nothing.
+          if (state is AuthInitial || state is AuthLoading) {
+            return const SizedBox(width: 40, height: 40);
+          }
+
+          if (state is Authenticated) {
+            final imageUrl = state.session.avatarUrl?.trim() ?? '';
+
+            if (imageUrl.isEmpty) {
+              return const SizedBox(width: 40, height: 40);
+            }
+
+            return ClipOval(
+              child: AppCachedImage(
+                imageUrl: imageUrl,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            );
+          }
+
+          if (state is GuestSession) {
+            const guestAvatarUrl =
+                'https://api.dicebear.com/9.x/avataaars/png?seed=Guest';
+
+            return ClipOval(
+              child: AppCachedImage(
+                imageUrl: guestAvatarUrl,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            );
+          }
+
+          return const SizedBox(width: 40, height: 40);
+        },
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/features/account/presentation/cubit/account_cubit.dart';
 import 'package:demix/features/account/presentation/cubit/account_state.dart';
+import 'package:demix/features/account/presentation/view/account_page_shell.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +25,6 @@ class _EditProfileViewState extends State<EditProfileView> {
     super.initState();
 
     final state = context.read<AccountCubit>().state;
-
     final user = state is AccountLoaded ? state.user : null;
 
     _nameController = TextEditingController(text: user?.displayName ?? '');
@@ -45,8 +45,8 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
 
     context.read<AccountCubit>().updateProfile(
-      displayName: _nameController.text,
-      phone: _phoneController.text,
+      displayName: _nameController.text.trim(),
+      phone: _phoneController.text.trim(),
     );
   }
 
@@ -70,84 +70,85 @@ class _EditProfileViewState extends State<EditProfileView> {
           ).showSnackBar(SnackBar(content: Text(state.failure.message)));
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title: Text(
-            s.editProfile,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-          ),
-        ),
-        body: SafeArea(
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: s.name,
-                    prefixIcon: const Icon(Icons.person_outline_rounded),
+      child: AccountPageShell(
+        title: s.editProfile,
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 40),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                AccountSectionHeader(
+                  title: s.editProfile,
+                  icon: Icons.edit_outlined,
+                ),
+
+                const SizedBox(height: 12),
+
+                AccountCard(
+                  padding: const EdgeInsets.all(18),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _nameController,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: s.name,
+                            prefixIcon: Icon(
+                              Icons.person_outline_rounded,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return s.requiredField;
+                            }
+
+                            if (value.trim().length < 2) {
+                              return s.invalidName;
+                            }
+
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        TextFormField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          textInputAction: TextInputAction.done,
+                          decoration: InputDecoration(
+                            labelText: s.phone,
+                            prefixIcon: Icon(
+                              Icons.phone_outlined,
+                              color: AppColors.secondary,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 26),
+
+                        BlocBuilder<AccountCubit, AccountState>(
+                          builder: (context, state) {
+                            final loading = state is AccountUpdating;
+
+                            return AccountPrimaryButton(
+                              text: s.save,
+                              loading: loading,
+                              onPressed: _save,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return s.requiredField;
-                    }
-
-                    if (value.trim().length < 2) {
-                      return s.invalidName;
-                    }
-
-                    return null;
-                  },
                 ),
-
-                const SizedBox(height: 18),
-
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    labelText: s.phone,
-                    prefixIcon: const Icon(Icons.phone_outlined),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                BlocBuilder<AccountCubit, AccountState>(
-                  builder: (context, state) {
-                    final loading = state is AccountUpdating;
-
-                    return SizedBox(
-                      height: 54,
-                      child: ElevatedButton(
-                        onPressed: loading ? null : _save,
-                        child: loading
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                s.save,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+              ]),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

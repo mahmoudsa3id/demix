@@ -5,11 +5,11 @@ import 'package:demix/features/home/presentation/views/widgets/home_business_car
 import 'package:demix/features/home/presentation/views/widgets/home_business_empty.dart';
 import 'package:demix/features/home/presentation/views/widgets/home_business_error.dart';
 import 'package:demix/features/home/presentation/views/widgets/home_business_loading.dart';
+import 'package:demix/features/home/presentation/views/widgets/home_offer_item.dart';
 import 'package:demix/features/home/presentation/views/widgets/home_view_category.dart';
 import 'package:demix/features/home/presentation/views/widgets/home_view_header.dart';
 import 'package:demix/features/home/presentation/views/widgets/home_view_hero.dart';
 import 'package:demix/features/home/presentation/views/widgets/home_view_search.dart';
-import 'package:demix/features/home/presentation/views/widgets/offer_item.dart';
 import 'package:demix/features/home/presentation/views/widgets/product_card_list.dart';
 import 'package:demix/features/location/presentation/cubit/saved_location_cubit.dart';
 import 'package:demix/generated/l10n.dart';

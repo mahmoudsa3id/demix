@@ -22,6 +22,7 @@ class CartItemModel extends CartItem {
         price: (data['price'] as num).toDouble(),
         isAvailable: (data['is_available'] as int? ?? 1) == 1,
         sortOrder: data['sort_order'] as int? ?? 0,
+        businessLogo: 'businessLogoUrl',
       ),
       quantity: data['quantity'] as int,
     );

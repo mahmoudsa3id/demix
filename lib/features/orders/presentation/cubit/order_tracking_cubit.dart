@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../domain/entities/order_entity.dart';
 import '../../domain/use_cases/watch_order_use_case.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 sealed class OrderTrackingState {
   const OrderTrackingState();
@@ -16,30 +18,48 @@ class OrderTrackingLoading extends OrderTrackingState {
 }
 
 class OrderTrackingLoaded extends OrderTrackingState {
-  const OrderTrackingLoaded(this.data);
-  final Map<String, dynamic> data;
+  const OrderTrackingLoaded(this.order);
+
+  final OrderEntity order;
 }
 
 class OrderTrackingFailure extends OrderTrackingState {
   const OrderTrackingFailure(this.message);
+
   final String message;
 }
 
 class OrderTrackingCubit extends Cubit<OrderTrackingState> {
-  OrderTrackingCubit({required this._watchOrder})
-    : super(const OrderTrackingInitial());
+  OrderTrackingCubit({required WatchOrderUseCase watchOrder})
+    : _watchOrder = watchOrder,
+      super(const OrderTrackingInitial());
+
   final WatchOrderUseCase _watchOrder;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _sub;
-  void watch(String id) {
+
+  StreamSubscription<OrderEntity?>? _sub;
+
+  void watch(String orderId) {
     _sub?.cancel();
+
     emit(const OrderTrackingLoading());
-    _sub = _watchOrder(id).listen((s) {
-      if (!s.exists) {
-        emit(const OrderTrackingFailure('Order not found'));
-        return;
-      }
-      emit(OrderTrackingLoaded(s.data() ?? {}));
-    }, onError: (e) => emit(OrderTrackingFailure(e.toString())));
+
+    _sub = _watchOrder(orderId).listen(
+      (order) {
+        if (isClosed) return;
+
+        if (order == null) {
+          emit(const OrderTrackingFailure('Order not found'));
+          return;
+        }
+
+        emit(OrderTrackingLoaded(order));
+      },
+      onError: (error) {
+        if (isClosed) return;
+
+        emit(OrderTrackingFailure(error.toString()));
+      },
+    );
   }
 
   @override

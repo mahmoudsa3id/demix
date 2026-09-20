@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/widgets/app_cached_image.dart';
@@ -666,7 +665,7 @@ class _CartBar extends StatelessWidget {
 
                 // مهم:
                 // السلة Tab داخل الـ ShellRoute
-                onTap: () => context.go(RoutePaths.cart),
+                onTap: () => context.push(RoutePaths.cart),
 
                 splashColor: AppColors.secondary.withOpacity(.15),
 

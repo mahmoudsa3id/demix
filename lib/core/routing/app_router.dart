@@ -103,17 +103,16 @@ class AppRouter {
                 return const FavoritesView();
               },
             ),
-
+            GoRoute(
+              path: RoutePaths.profile,
+              name: 'profile',
+              builder: (context, state) {
+                return ProfileView();
+              },
+            ),
             // ========================================================
             // CART
             // ========================================================
-            GoRoute(
-              path: RoutePaths.cart,
-              name: 'cart',
-              builder: (context, state) {
-                return const CartPage();
-              },
-            ),
 
             // ========================================================
             // PROFILE
@@ -132,6 +131,13 @@ class AppRouter {
             return const EditProfileView();
           },
         ),
+        GoRoute(
+          path: RoutePaths.cart,
+          name: 'cart',
+          builder: (context, state) {
+            return const CartPage();
+          },
+        ),
 
         GoRoute(
           path: RoutePaths.settings,
@@ -146,13 +152,6 @@ class AppRouter {
           name: 'language',
           builder: (context, state) {
             return const LanguageView();
-          },
-        ),
-        GoRoute(
-          path: RoutePaths.profile,
-          name: 'profile',
-          builder: (context, state) {
-            return ProfileView();
           },
         ),
 

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:demix/core/routing/route_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -134,7 +135,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             action: SnackBarAction(
               label: 'السلة',
               onPressed: () {
-                // Cart navigation can be connected from the app router.
+                context.go(RoutePaths.cart);
               },
             ),
           ),

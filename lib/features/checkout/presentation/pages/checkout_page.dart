@@ -1,24 +1,22 @@
+import 'package:demix/core/routing/route_paths.dart';
+import 'package:demix/core/theme/app_colors.dart';
+import 'package:demix/core/widgets/app_background_page.dart';
+import 'package:demix/core/widgets/app_cached_image.dart';
+import 'package:demix/features/business/domain/entities/business.dart';
+import 'package:demix/features/cart/domain/entities/cart_item.dart';
+import 'package:demix/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:demix/features/checkout/presentation/pages/widgets/address_card.dart';
-import 'package:demix/features/checkout/presentation/pages/widgets/checkout_bottom_bar.dart';
-import 'package:demix/features/checkout/presentation/pages/widgets/checkout_header.dart';
-import 'package:demix/features/checkout/presentation/pages/widgets/checkout_section.dart';
-import 'package:demix/features/checkout/presentation/pages/widgets/order_item_card.dart';
 import 'package:demix/features/checkout/presentation/pages/widgets/price_summary.dart';
+import 'package:demix/features/payment/domain/entities/payment_method.dart';
+import 'package:demix/features/payment/presentation/widgets/payment_method_selector.dart';
+import 'package:demix/features/orders/domain/entities/order_entity.dart';
+import 'package:demix/features/orders/domain/entities/order_item_snapshot.dart';
+import 'package:demix/features/orders/presentation/cubit/order_cubit.dart';
+import 'package:demix/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:demix/core/routing/route_paths.dart';
-import 'package:demix/features/business/domain/entities/business.dart';
-import 'package:demix/features/cart/domain/entities/cart_item.dart';
-import 'package:demix/features/cart/presentation/cubit/cart_cubit.dart';
-import 'package:demix/features/orders/domain/entities/order_entity.dart';
-import 'package:demix/features/orders/domain/entities/order_item_snapshot.dart';
-import 'package:demix/features/orders/presentation/cubit/order_cubit.dart';
-import 'package:demix/features/payment/domain/entities/payment_method.dart';
-import 'package:demix/features/payment/presentation/widgets/payment_method_selector.dart';
-import 'package:demix/main.dart';
 
 class CheckoutArguments {
   const CheckoutArguments({
@@ -115,10 +113,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
       userId: user.uid,
       businessId: widget.arguments.business.id,
       businessName: widget.arguments.business.name,
+
       items: widget.arguments.items
           .map(
             (item) => OrderItemSnapshot(
               productId: item.product.id,
+
+              // ✅ خده من الـ Business نفسه
+              businessLogo: widget.arguments.business.logoUrl ?? '',
+
               businessId: item.product.businessId,
               categoryId: item.product.categoryId ?? '',
               name: item.product.name,
@@ -130,6 +133,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
           )
           .toList(),
+
       address: address,
       subtotal: subtotal,
       deliveryFee: deliveryFee,
@@ -137,8 +141,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
       total: total,
       paymentMethod: _payment.name,
       status: 'pending',
+      createdAt: DateTime.now(),
     );
-
     await _orderCubit.create(order);
   }
 
@@ -176,71 +180,637 @@ class _CheckoutPageState extends State<CheckoutPage> {
           }
         },
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'تأكيد الطلب',
-              style: TextStyle(fontWeight: FontWeight.w900),
+          backgroundColor: const Color(0xFFF8F8FB),
+          body: AppPageBackground(
+            child: Column(
+              children: [
+                Expanded(
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      const SliverToBoxAdapter(child: _CheckoutTopBar()),
+
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 180),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
+                            _RestaurantHero(
+                              business: widget.arguments.business,
+                              itemsCount: widget.arguments.items.length,
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            _CheckoutSectionCard(
+                              icon: Icons.location_on_outlined,
+                              title: 'عنوان التوصيل',
+                              child: AddressCard(
+                                address: _address,
+                                onTap: _chooseAddress,
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            _CheckoutSectionCard(
+                              icon: Icons.restaurant_menu_rounded,
+                              title: 'طلبك',
+                              trailing: Text(
+                                '${widget.arguments.items.length} منتجات',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              child: _ProductList(
+                                items: widget.arguments.items,
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            _CheckoutSectionCard(
+                              icon: Icons.account_balance_wallet_outlined,
+                              title: 'طريقة الدفع',
+                              child: PaymentMethodSelector(
+                                value: _payment,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _payment = value;
+                                  });
+                                },
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            _CheckoutSectionCard(
+                              icon: Icons.receipt_long_rounded,
+                              title: 'تفاصيل الدفع',
+                              child: PriceSummary(
+                                subtotal: subtotal,
+                                deliveryFee: deliveryFee,
+                                total: total,
+                              ),
+                            ),
+                          ]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            centerTitle: false,
           ),
-          body: ListView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 160),
-            children: [
-              CheckoutHeader(
-                business: widget.arguments.business,
-                itemsCount: widget.arguments.items.length,
-              ),
-
-              const SizedBox(height: 20),
-
-              CheckoutSection(
-                title: 'عنوان التوصيل',
-                icon: Icons.location_on_outlined,
-                child: AddressCard(address: _address, onTap: _chooseAddress),
-              ),
-
-              const SizedBox(height: 20),
-
-              CheckoutSection(
-                title: 'ملخص الطلب',
-                icon: Icons.receipt_long_outlined,
-                child: OrderItemsCard(items: widget.arguments.items),
-              ),
-
-              const SizedBox(height: 20),
-
-              CheckoutSection(
-                title: 'طريقة الدفع',
-                icon: Icons.account_balance_wallet_outlined,
-                child: PaymentMethodSelector(
-                  value: _payment,
-                  onChanged: (value) {
-                    setState(() {
-                      _payment = value;
-                    });
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              CheckoutSection(
-                title: 'تفاصيل السعر',
-                icon: Icons.payments_outlined,
-                child: PriceSummary(
-                  subtotal: subtotal,
-                  deliveryFee: deliveryFee,
-                  total: total,
-                ),
-              ),
-            ],
-          ),
-          bottomNavigationBar: CheckoutBottomBar(
+          bottomNavigationBar: _CheckoutBottomBar(
             total: total,
             addressSelected: _address != null,
             onPressed: _placeOrder,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// TOP BAR
+// ============================================================================
+
+class _CheckoutTopBar extends StatelessWidget {
+  const _CheckoutTopBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: 72,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Container(
+                width: 43,
+                height: 43,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.88),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.white, width: 1.1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.035),
+                      blurRadius: 15,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: () => context.pop(),
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 17),
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              const Expanded(
+                child: Text(
+                  'تأكيد الطلب',
+                  style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.6,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// RESTAURANT HERO
+// ============================================================================
+
+class _RestaurantHero extends StatelessWidget {
+  const _RestaurantHero({required this.business, required this.itemsCount});
+
+  final Business business;
+  final int itemsCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = (business.logoUrl ?? '').trim();
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: SizedBox(
+        height: 205,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            imageUrl.isNotEmpty
+                ? AppCachedImage(imageUrl: imageUrl, fit: BoxFit.cover)
+                : Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [AppColors.primary, AppColors.secondary],
+                      ),
+                    ),
+                  ),
+
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.03),
+                      Colors.black.withValues(alpha: 0.70),
+                    ],
+                    stops: const [0.25, 1],
+                  ),
+                ),
+              ),
+            ),
+
+            Positioned(
+              top: 14,
+              right: 14,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 11,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.90),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.shopping_bag_outlined, size: 14),
+                    const SizedBox(width: 6),
+                    Text(
+                      '$itemsCount منتجات',
+                      style: const TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            Positioned(
+              left: 18,
+              right: 18,
+              bottom: 17,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          business.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 23,
+                            fontWeight: FontWeight.w900,
+                            height: 1.05,
+                          ),
+                        ),
+                        const SizedBox(height: 7),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.local_shipping_outlined,
+                              color: Colors.white70,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              'رسوم التوصيل ${business.deliveryFee.toStringAsFixed(0)} ج',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                    width: 54,
+                    height: 54,
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(17),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: imageUrl.isNotEmpty
+                          ? AppCachedImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.cover,
+                            )
+                          : Icon(
+                              Icons.restaurant_rounded,
+                              color: AppColors.primary,
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// SECTION
+// ============================================================================
+
+class _CheckoutSectionCard extends StatelessWidget {
+  const _CheckoutSectionCard({
+    required this.icon,
+    required this.title,
+    required this.child,
+    this.trailing,
+  });
+
+  final IconData icon;
+  final String title;
+  final Widget child;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.90),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white, width: 1.1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.035),
+            blurRadius: 22,
+            offset: const Offset(0, 9),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(13),
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.10),
+                      AppColors.secondary.withValues(alpha: 0.09),
+                    ],
+                  ),
+                ),
+                child: Icon(icon, size: 18, color: AppColors.primary),
+              ),
+
+              const SizedBox(width: 10),
+
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+
+              if (trailing != null) trailing!,
+            ],
+          ),
+
+          const SizedBox(height: 15),
+
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// PRODUCTS
+// ============================================================================
+
+class _ProductList extends StatelessWidget {
+  const _ProductList({required this.items});
+
+  final List<CartItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (int i = 0; i < items.length; i++) ...[
+          _ProductCheckoutTile(item: items[i]),
+          if (i != items.length - 1)
+            const Padding(
+              padding: EdgeInsets.only(left: 66, top: 11, bottom: 11),
+              child: Divider(height: 1, color: Color(0xFFEFEFF2)),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ProductCheckoutTile extends StatelessWidget {
+  const _ProductCheckoutTile({required this.item});
+
+  final CartItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = item.product.imageUrl!.trim();
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(17),
+          child: SizedBox(
+            width: 58,
+            height: 58,
+            child: imageUrl.isNotEmpty
+                ? AppCachedImage(
+                    imageUrl: imageUrl,
+                    width: 58,
+                    height: 58,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    color: const Color(0xFFF2F2F5),
+                    child: Icon(
+                      Icons.restaurant_menu_rounded,
+                      color: AppColors.textSecondary,
+                      size: 23,
+                    ),
+                  ),
+          ),
+        ),
+
+        const SizedBox(width: 12),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.product.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  height: 1.25,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '× ${item.quantity}',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${item.product.price.toStringAsFixed(0)} ج',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(width: 10),
+
+        Text(
+          '${item.lineTotal.toStringAsFixed(0)} ج',
+          style: TextStyle(
+            color: AppColors.black,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// BOTTOM BAR
+// ============================================================================
+
+class _CheckoutBottomBar extends StatelessWidget {
+  const _CheckoutBottomBar({
+    required this.total,
+    required this.addressSelected,
+    required this.onPressed,
+  });
+
+  final double total;
+  final bool addressSelected;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 11, 16, 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.95),
+          border: const Border(top: BorderSide(color: Color(0xFFECECF0))),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.07),
+              blurRadius: 25,
+              offset: const Offset(0, -10),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'الإجمالي',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${total.toStringAsFixed(0)} ج',
+                    style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            Expanded(
+              flex: 2,
+              child: SizedBox(
+                height: 54,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: addressSelected
+                        ? LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [AppColors.primary, AppColors.secondary],
+                          )
+                        : null,
+                    color: addressSelected ? null : const Color(0xFFE4E4E8),
+                    borderRadius: BorderRadius.circular(17),
+                    boxShadow: addressSelected
+                        ? [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.18),
+                              blurRadius: 18,
+                              offset: const Offset(0, 8),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: FilledButton(
+                    onPressed: addressSelected ? onPressed : null,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      disabledBackgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      disabledForegroundColor: const Color(0xFF9999A0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(17),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'تأكيد الطلب',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 13.5,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_rounded, size: 18),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

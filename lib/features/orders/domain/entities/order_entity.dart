@@ -1,5 +1,5 @@
+import 'package:demix/features/orders/domain/entities/order_item_snapshot.dart';
 import 'package:equatable/equatable.dart';
-import 'order_item_snapshot.dart';
 
 class DeliveryAddressSnapshot extends Equatable {
   const DeliveryAddressSnapshot({
@@ -10,16 +10,44 @@ class DeliveryAddressSnapshot extends Equatable {
     required this.latitude,
     required this.longitude,
   });
-  final String formattedAddress, street, area, city;
-  final double latitude, longitude;
-  Map<String, dynamic> toMap() => {
-    'formattedAddress': formattedAddress,
-    'street': street,
-    'area': area,
-    'city': city,
-    'latitude': latitude,
-    'longitude': longitude,
-  };
+
+  final String formattedAddress;
+  final String street;
+  final String area;
+  final String city;
+  final double latitude;
+  final double longitude;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'formattedAddress': formattedAddress,
+      'street': street,
+      'area': area,
+      'city': city,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
+
+  factory DeliveryAddressSnapshot.fromMap(Map<String, dynamic> map) {
+    return DeliveryAddressSnapshot(
+      formattedAddress: map['formattedAddress']?.toString() ?? '',
+      street: map['street']?.toString() ?? '',
+      area: map['area']?.toString() ?? '',
+      city: map['city']?.toString() ?? '',
+      latitude: _toDouble(map['latitude']),
+      longitude: _toDouble(map['longitude']),
+    );
+  }
+
+  static double _toDouble(dynamic value) {
+    if (value is num) {
+      return value.toDouble();
+    }
+
+    return double.tryParse(value?.toString() ?? '') ?? 0.0;
+  }
+
   @override
   List<Object?> get props => [
     formattedAddress,
@@ -38,6 +66,7 @@ class OrderEntity extends Equatable {
     required this.userId,
     required this.businessId,
     required this.businessName,
+    this.businessImageUrl,
     required this.items,
     required this.address,
     required this.subtotal,
@@ -46,19 +75,29 @@ class OrderEntity extends Equatable {
     required this.total,
     required this.paymentMethod,
     required this.status,
-    this.createdAt,
+    required this.createdAt,
   });
-  final String id,
-      orderNumber,
-      userId,
-      businessId,
-      businessName,
-      paymentMethod,
-      status;
+
+  final String id;
+  final String orderNumber;
+  final String userId;
+
+  final String businessId;
+  final String businessName;
+  final String? businessImageUrl;
+
   final List<OrderItemSnapshot> items;
   final DeliveryAddressSnapshot address;
-  final double subtotal, deliveryFee, discount, total;
-  final DateTime? createdAt;
+
+  final double subtotal;
+  final double deliveryFee;
+  final double discount;
+  final double total;
+
+  final String paymentMethod;
+  final String status;
+  final DateTime createdAt;
+
   @override
   List<Object?> get props => [
     id,
@@ -66,6 +105,7 @@ class OrderEntity extends Equatable {
     userId,
     businessId,
     businessName,
+    businessImageUrl,
     items,
     address,
     subtotal,

@@ -30,40 +30,20 @@ class AppCachedImage extends StatelessWidget {
     final image = CachedNetworkImage(
       imageUrl: imageUrl,
       width: width,
-      cacheManager: AppCacheManager.instance,
-
       height: height,
+      cacheManager: AppCacheManager.instance,
       fit: fit,
 
-      fadeInDuration: const Duration(milliseconds: 180),
-
-      fadeOutDuration: const Duration(milliseconds: 100),
-
-      placeholderFadeInDuration: const Duration(milliseconds: 100),
+      fadeInDuration: const Duration(milliseconds: 220),
+      fadeOutDuration: const Duration(milliseconds: 120),
+      placeholderFadeInDuration: const Duration(milliseconds: 120),
 
       placeholder: (context, url) {
-        return placeholder ??
-            const Center(
-              child: SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 1.8,
-                  color: AppColors.primary,
-                ),
-              ),
-            );
+        return placeholder ?? const _ImageSkeleton();
       },
 
       errorWidget: (context, url, error) {
-        return errorWidget ??
-            const Center(
-              child: Icon(
-                Icons.image_not_supported_outlined,
-                color: AppColors.textSecondary,
-                size: 24,
-              ),
-            );
+        return errorWidget ?? const _ImageError();
       },
     );
 
@@ -72,5 +52,113 @@ class AppCachedImage extends StatelessWidget {
     }
 
     return ClipRRect(borderRadius: borderRadius!, child: image);
+  }
+}
+
+// ============================================================================
+// PREMIUM IMAGE SKELETON
+// ============================================================================
+
+class _ImageSkeleton extends StatefulWidget {
+  const _ImageSkeleton();
+
+  @override
+  State<_ImageSkeleton> createState() => _ImageSkeletonState();
+}
+
+class _ImageSkeletonState extends State<_ImageSkeleton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return ShaderMask(
+          blendMode: BlendMode.srcATop,
+          shaderCallback: (bounds) {
+            final progress = _controller.value;
+
+            final gradient = LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                const Color(0xFFF1F1F4),
+                const Color(0xFFF1F1F4),
+                AppColors.primary.withValues(alpha: 0.08),
+                Colors.white.withValues(alpha: 0.80),
+                AppColors.secondary.withValues(alpha: 0.06),
+                const Color(0xFFF1F1F4),
+                const Color(0xFFF1F1F4),
+              ],
+              stops: [
+                0.0,
+                (progress - 0.30).clamp(0.0, 1.0),
+                (progress - 0.12).clamp(0.0, 1.0),
+                progress.clamp(0.0, 1.0),
+                (progress + 0.12).clamp(0.0, 1.0),
+                (progress + 0.30).clamp(0.0, 1.0),
+                1.0,
+              ],
+            );
+
+            return gradient.createShader(bounds);
+          },
+          child: Container(color: const Color(0xFFF1F1F4)),
+        );
+      },
+    );
+  }
+}
+// ============================================================================
+// IMAGE ERROR
+// ============================================================================
+
+class _ImageError extends StatelessWidget {
+  const _ImageError();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFFF5F5F7),
+      alignment: Alignment.center,
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.8),
+          borderRadius: BorderRadius.circular(13),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.image_not_supported_outlined,
+          color: AppColors.textSecondary,
+          size: 21,
+        ),
+      ),
+    );
   }
 }

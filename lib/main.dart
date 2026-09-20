@@ -9,6 +9,7 @@ import 'package:demix/core/widgets/snack_bar/app_snack_bar_service.dart';
 
 import 'package:demix/features/account/presentation/cubit/account_cubit.dart';
 import 'package:demix/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:demix/features/auth/presentation/cubit/auth_state.dart';
 import 'package:demix/features/cart/presentation/cubit/cart_cubit.dart';
 
 import 'package:demix/firebase_options.dart';
@@ -84,89 +85,101 @@ class _DemixMaterialApp extends StatefulWidget {
 }
 
 class _DemixMaterialAppState extends State<_DemixMaterialApp> {
+  late final AuthCubit _authCubit;
+  late final AccountCubit _accountCubit;
+  late final CartCubit _cartCubit;
+
   @override
   void initState() {
     super.initState();
 
-    // -------------------------------------------------------------------------
-    // Router
-    // -------------------------------------------------------------------------
-
     AppRouter.initialize();
+
+    _authCubit = getIt<AuthCubit>();
+    _accountCubit = getIt<AccountCubit>();
+    _cartCubit = getIt<CartCubit>();
+
+    _authCubit.initialize();
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        // ---------------------------------------------------------------------
-        // Auth
-        // ---------------------------------------------------------------------
-        BlocProvider<AuthCubit>(
-          create: (_) => getIt<AuthCubit>()..initialize(),
-        ),
+        BlocProvider<AuthCubit>.value(value: _authCubit),
 
-        // ---------------------------------------------------------------------
-        // Cart
-        // ---------------------------------------------------------------------
-        BlocProvider<CartCubit>.value(value: getIt<CartCubit>()..load()),
+        BlocProvider<AccountCubit>.value(value: _accountCubit),
 
-        // ---------------------------------------------------------------------
-        // Account
-        // ---------------------------------------------------------------------
-        BlocProvider<AccountCubit>.value(value: getIt<AccountCubit>()..load()),
+        BlocProvider<CartCubit>.value(value: _cartCubit),
       ],
-      child: AnimatedBuilder(
-        animation: LocaleController.instance,
-        builder: (context, child) {
-          return MaterialApp.router(
-            // -----------------------------------------------------------------
-            // Theme
-            // -----------------------------------------------------------------
-            theme: _buildTheme(),
+      child: BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          // ================================================================
+          // USER LOGGED IN
+          // ================================================================
 
-            // -----------------------------------------------------------------
-            // SnackBar
-            // -----------------------------------------------------------------
-            scaffoldMessengerKey: AppSnackBarService.instance.messengerKey,
+          if (state is Authenticated) {
+            context.read<AccountCubit>().load();
 
-            // -----------------------------------------------------------------
-            // Localization
-            // -----------------------------------------------------------------
-            locale: LocaleController.instance.locale,
+            // لو Cart مرتبط بالمستخدم:
+            context.read<CartCubit>().load();
+          }
 
-            supportedLocales: S.delegate.supportedLocales,
+          // ================================================================
+          // GUEST
+          // ================================================================
 
-            localizationsDelegates: const [
-              S.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
+          if (state is GuestSession) {
+            // هنا حسب تصميم الـ Cart عندك
+            // ممكن تعمل clear أو load guest cart
+          }
 
-            // -----------------------------------------------------------------
-            // Router
-            // -----------------------------------------------------------------
-            routerConfig: AppRouter.router,
+          // ================================================================
+          // LOGGED OUT
+          // ================================================================
 
-            // -----------------------------------------------------------------
-            // Debug
-            // -----------------------------------------------------------------
-            debugShowCheckedModeBanner: false,
+          if (state is Unauthenticated) {
+            // مهم:
+            // امسح بيانات الـ Account القديمة
+            // لو عندك method clear أضفها في AccountCubit.
 
-            // -----------------------------------------------------------------
-            // Global Builder
-            // -----------------------------------------------------------------
-            builder: (context, child) {
-              return MediaQuery(
-                data: MediaQuery.of(
-                  context,
-                ).copyWith(textScaler: const TextScaler.linear(1.0)),
-                child: child ?? const SizedBox.shrink(),
-              );
-            },
-          );
+            // والـ Router هو المسؤول عن الذهاب للـ Login
+          }
         },
+        child: AnimatedBuilder(
+          animation: LocaleController.instance,
+          builder: (context, child) {
+            return MaterialApp.router(
+              theme: _buildTheme(),
+
+              scaffoldMessengerKey: AppSnackBarService.instance.messengerKey,
+
+              locale: LocaleController.instance.locale,
+
+              supportedLocales: S.delegate.supportedLocales,
+
+              localizationsDelegates: const [
+                S.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+
+              routerConfig: AppRouter.router,
+
+              debugShowCheckedModeBanner: false,
+
+              builder: (context, child) {
+                return MediaQuery(
+                  data: MediaQuery.of(
+                    context,
+                  ).copyWith(textScaler: const TextScaler.linear(1.0)),
+                  child: child ?? const SizedBox.shrink(),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

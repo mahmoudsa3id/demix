@@ -1,3 +1,4 @@
+import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/features/checkout/presentation/pages/widgets/price_row.dart';
 import 'package:flutter/material.dart';
 
@@ -15,42 +16,38 @@ class PriceSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    return Column(
+      children: [
+        PriceRow(title: 'المجموع الفرعي', value: subtotal),
 
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Column(
-        children: [
-          PriceRow(title: 'المجموع الفرعي', value: subtotal),
-          const SizedBox(height: 10),
-          PriceRow(title: 'رسوم التوصيل', value: deliveryFee),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            child: Divider(color: colors.outlineVariant),
-          ),
-          Row(
-            children: [
-              const Text(
+        const SizedBox(height: 11),
+
+        PriceRow(title: 'التوصيل', value: deliveryFee),
+
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 15),
+          child: Divider(height: 1, color: Color(0xFFEDEDF1)),
+        ),
+
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
                 'الإجمالي',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
               ),
-              const Spacer(),
-              Text(
-                '${total.toStringAsFixed(0)} ج',
-                style: TextStyle(
-                  color: colors.primary,
-                  fontSize: 21,
-                  fontWeight: FontWeight.w900,
-                ),
+            ),
+            Text(
+              '${total.toStringAsFixed(0)} ج',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontSize: 19,
+                fontWeight: FontWeight.w900,
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

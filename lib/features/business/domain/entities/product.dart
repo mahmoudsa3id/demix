@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class Product extends Equatable {
   const Product({
+    required this.businessLogo,
     required this.id,
     required this.businessId,
     required this.name,
@@ -16,7 +17,7 @@ class Product extends Equatable {
     this.isAvailable = true,
     this.sortOrder = 0,
   });
-
+  final String businessLogo;
   final String id;
   final String businessId;
   final String name;
@@ -33,8 +34,18 @@ class Product extends Equatable {
 
   @override
   List<Object?> get props => [
-        id, businessId, name, price, nameAr, nameEn, description,
-        descriptionAr, descriptionEn, imageUrl, categoryId, isAvailable,
-        sortOrder,
-      ];
+    id,
+    businessId,
+    name,
+    price,
+    nameAr,
+    nameEn,
+    description,
+    descriptionAr,
+    descriptionEn,
+    imageUrl,
+    categoryId,
+    isAvailable,
+    sortOrder,
+  ];
 }

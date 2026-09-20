@@ -3,6 +3,10 @@ import '../repositories/order_repository.dart';
 
 class CreateOrderUseCase {
   const CreateOrderUseCase(this._repository);
+
   final OrderRepository _repository;
-  Future<String> call(OrderEntity order) => _repository.createOrder(order);
+
+  Future<String> call(OrderEntity order) {
+    return _repository.createOrder(order);
+  }
 }

@@ -16,7 +16,7 @@ class BottomNav extends StatelessWidget {
     RoutePaths.home,
     RoutePaths.orders,
     RoutePaths.favorites,
-    RoutePaths.cart,
+    RoutePaths.profile,
   ];
 
   int _currentIndex(BuildContext context) {
@@ -43,13 +43,13 @@ class BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final selectedIndex = _currentIndex(context);
 
-    final labels = [s.home, s.orders, s.favorites, s.cart];
+    final labels = [s.home, s.orders, s.favorites, s.profile];
 
     final icons = [
       Icons.home_rounded,
       Icons.shopping_bag_outlined,
       Icons.favorite_border_rounded,
-      Icons.shopping_cart_outlined,
+      Icons.person,
     ];
 
     return SafeArea(
@@ -90,28 +90,6 @@ class BottomNav extends StatelessWidget {
                               ? AppColors.secondary
                               : AppColors.textSecondary,
                         ),
-
-                        if (i == 3)
-                          BlocBuilder<CartCubit, CartState>(
-                            buildWhen: (previous, current) =>
-                                previous.items != current.items,
-                            builder: (context, state) {
-                              final count = state.items.fold<int>(
-                                0,
-                                (sum, item) => sum + item.quantity,
-                              );
-
-                              if (count <= 0) {
-                                return const SizedBox.shrink();
-                              }
-
-                              return Positioned(
-                                right: -8,
-                                top: -8,
-                                child: badge(count > 99 ? '99+' : '$count'),
-                              );
-                            },
-                          ),
                       ],
                     ),
                     const SizedBox(height: 3),

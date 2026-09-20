@@ -16,6 +16,7 @@ class ProductModel extends Product {
     super.categoryId,
     super.isAvailable,
     super.sortOrder,
+    required super.businessLogo,
   });
 
   factory ProductModel.fromFirestore(
@@ -24,8 +25,11 @@ class ProductModel extends Product {
   ) {
     final data = snapshot.data() ?? <String, dynamic>{};
     return ProductModel(
+      businessLogo: data['businessLogoUrl'] ?? '',
       id: snapshot.id,
-      businessId: _string(data['businessId']).isEmpty ? businessId : _string(data['businessId']),
+      businessId: _string(data['businessId']).isEmpty
+          ? businessId
+          : _string(data['businessId']),
       name: _string(data['name']),
       price: _double(data['price']),
       nameAr: _nullable(data['nameAr']),
@@ -36,7 +40,9 @@ class ProductModel extends Product {
       imageUrl: _nullable(data['imageUrl']),
       categoryId: _nullable(data['categoryId']),
       isAvailable: data['isAvailable'] as bool? ?? true,
-      sortOrder: data['sortOrder'] is num ? (data['sortOrder'] as num).toInt() : 0,
+      sortOrder: data['sortOrder'] is num
+          ? (data['sortOrder'] as num).toInt()
+          : 0,
     );
   }
 
@@ -45,5 +51,7 @@ class ProductModel extends Product {
     final s = v?.toString().trim();
     return s == null || s.isEmpty ? null : s;
   }
-  static double _double(dynamic v) => v is num ? v.toDouble() : double.tryParse('$v') ?? 0;
+
+  static double _double(dynamic v) =>
+      v is num ? v.toDouble() : double.tryParse('$v') ?? 0;
 }

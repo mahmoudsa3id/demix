@@ -1,3 +1,4 @@
+import 'package:demix/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class PriceRow extends StatelessWidget {
@@ -8,27 +9,23 @@ class PriceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
     return Row(
       children: [
-        Text(
-          title,
-          style: TextStyle(
-            color: colors.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           ),
         ),
-        const Spacer(),
         Text(
           '${value.toStringAsFixed(0)} ج',
-          style: const TextStyle(fontWeight: FontWeight.w800),
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ],
     );
   }
 }
-
-// ============================================================
-// BOTTOM BAR
-// ============================================================
