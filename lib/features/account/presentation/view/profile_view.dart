@@ -222,7 +222,7 @@ class _ProfileBody extends StatelessWidget {
                         subtitle: s.manageYourAddresses,
                         accentColor: AppColors.secondary,
                         onTap: () {
-                          context.push(RoutePaths.addresses);
+                          context.push(RoutePaths.savedLocations);
                         },
                       ),
                       const _PremiumDivider(),

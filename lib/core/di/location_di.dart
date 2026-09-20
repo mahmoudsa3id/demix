@@ -136,6 +136,7 @@ void setupLocationDependencies(
     getIt.registerFactory<SavedLocationCubit>(
       () => SavedLocationCubit(
         getSavedLocation: getIt<GetSavedLocationUseCase>(),
+        deleteCurrentLocation: getIt<DeleteCurrentLocationUseCase>(),
       ),
     );
   }

@@ -1,13 +1,18 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:demix/core/di/injection.dart';
 import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
+import 'package:demix/core/widgets/app_cached_image.dart';
 import 'package:demix/features/business/domain/entities/business.dart';
 import 'package:demix/features/business/domain/entities/product.dart';
 import 'package:demix/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:demix/features/favorite/domain/entities/favourite_entity.dart';
+import 'package:demix/features/favorite/presentation/cubit/favorites_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 
 class ProductDetailsArguments {
@@ -81,36 +86,54 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final user = FirebaseAuth.instance.currentUser;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F9),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          _buildHeroAppBar(context),
+    final page = Builder(
+      builder: (pageContext) {
+        final theme = Theme.of(pageContext);
 
-          SliverToBoxAdapter(
-            child: AnimatedBuilder(
-              animation: _entryController,
-              builder: (_, child) {
-                return FadeTransition(
-                  opacity: _fade(),
-                  child: SlideTransition(position: _slide(.08), child: child),
-                );
-              },
-              child: _buildContent(theme),
-            ),
+        return Scaffold(
+          backgroundColor: const Color(0xFFF7F7F9),
+          body: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              _buildHeroAppBar(pageContext),
+
+              SliverToBoxAdapter(
+                child: AnimatedBuilder(
+                  animation: _entryController,
+                  builder: (_, child) {
+                    return FadeTransition(
+                      opacity: _fade(),
+                      child: SlideTransition(
+                        position: _slide(.08),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: _buildContent(theme),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      bottomNavigationBar: _ProductBottomBar(
-        product: _product,
-        total: _total,
-        quantity: _quantity,
-        addingToCart: _addingToCart,
-        onAddToCart: _addToCart,
-      ),
+          bottomNavigationBar: _ProductBottomBar(
+            product: _product,
+            total: _total,
+            quantity: _quantity,
+            addingToCart: _addingToCart,
+            onAddToCart: _addToCart,
+          ),
+        );
+      },
+    );
+
+    if (user == null) {
+      return page;
+    }
+
+    return BlocProvider<FavoritesCubit>(
+      create: (_) => getIt<FavoritesCubit>(param1: user.uid)..load(),
+      child: page,
     );
   }
 
@@ -135,6 +158,39 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
         ),
       ),
       actions: [
+        if (FirebaseAuth.instance.currentUser == null)
+          _GlassCircleButton(
+            icon: Icons.favorite_border_rounded,
+            onTap: () {
+              context.push(RoutePaths.login);
+            },
+            iconColor: Colors.white,
+          )
+        else
+          BlocBuilder<FavoritesCubit, FavoritesState>(
+            builder: (context, state) {
+              final favorite = FavoriteEntity.fromProduct(
+                _product,
+                businessName: _business.name,
+                businessRating: _business.rating,
+              );
+
+              final isFavorite =
+                  state is FavoritesLoaded && state.contains(favorite.id);
+
+              return _GlassCircleButton(
+                iconColor: isFavorite ? Colors.red : Colors.white,
+                icon: isFavorite
+                    ? Icons.favorite_rounded
+                    : Icons.favorite_border_rounded,
+                onTap: () {
+                  context.read<FavoritesCubit>().toggle(favorite);
+                },
+              );
+            },
+          ),
+        const SizedBox(width: 2),
+
         BlocBuilder<CartCubit, CartState>(
           buildWhen: (previous, current) => previous.items != current.items,
           builder: (context, state) {
@@ -531,7 +587,7 @@ class _ProductImageCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(28),
-        child: _NetworkImage(imageUrl: imageUrl, fit: BoxFit.cover),
+        child: AppCachedImage(imageUrl: imageUrl!, fit: BoxFit.cover),
       ),
     );
   }
@@ -1284,11 +1340,7 @@ class _BusinessLogo extends StatelessWidget {
         ],
       ),
       child: ClipOval(
-        child: _NetworkImage(
-          imageUrl: imageUrl,
-          fit: BoxFit.cover,
-          fallbackIcon: Icons.storefront_rounded,
-        ),
+        child: AppCachedImage(imageUrl: imageUrl!, fit: BoxFit.cover),
       ),
     );
   }
@@ -1298,70 +1350,20 @@ class _BusinessLogo extends StatelessWidget {
 // NETWORK IMAGE
 // ============================================================
 
-class _NetworkImage extends StatelessWidget {
-  const _NetworkImage({
-    required this.imageUrl,
-    this.fit = BoxFit.cover,
-    this.fallbackIcon = Icons.fastfood_rounded,
-  });
-
-  final String? imageUrl;
-  final BoxFit fit;
-  final IconData fallbackIcon;
-
-  @override
-  Widget build(BuildContext context) {
-    final url = imageUrl?.trim() ?? '';
-
-    if (url.isEmpty) {
-      return Container(
-        color: const Color(0xFFF0F0F3),
-        child: Icon(
-          fallbackIcon,
-          size: 40,
-          color: AppColors.primary.withOpacity(.45),
-        ),
-      );
-    }
-
-    return CachedNetworkImage(
-      imageUrl: url,
-      fit: fit,
-      placeholder: (_, __) {
-        return Container(
-          color: const Color(0xFFF0F0F3),
-          child: const Center(
-            child: SizedBox(
-              width: 23,
-              height: 23,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          ),
-        );
-      },
-      errorWidget: (_, __, ___) {
-        return Container(
-          color: const Color(0xFFF0F0F3),
-          child: Icon(
-            fallbackIcon,
-            size: 40,
-            color: AppColors.primary.withOpacity(.4),
-          ),
-        );
-      },
-    );
-  }
-}
-
 // ============================================================
 // GLASS BUTTON
 // ============================================================
 
 class _GlassCircleButton extends StatelessWidget {
-  const _GlassCircleButton({required this.icon, required this.onTap});
+  const _GlassCircleButton({
+    required this.icon,
+    required this.onTap,
+    this.iconColor = Colors.white,
+  });
 
   final IconData icon;
   final VoidCallback onTap;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -1376,7 +1378,18 @@ class _GlassCircleButton extends StatelessWidget {
             child: SizedBox(
               width: 44,
               height: 44,
-              child: Icon(icon, color: Colors.white, size: 21),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(scale: animation, child: child);
+                },
+                child: Icon(
+                  icon,
+                  key: ValueKey(icon),
+                  color: iconColor,
+                  size: 21,
+                ),
+              ),
             ),
           ),
         ),

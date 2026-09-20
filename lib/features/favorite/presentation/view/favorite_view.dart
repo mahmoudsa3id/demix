@@ -1,13 +1,19 @@
 import 'package:demix/core/di/injection.dart';
+import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/widgets/app_background_page.dart';
 import 'package:demix/core/widgets/app_cached_image.dart';
+
 import 'package:demix/features/favorite/domain/entities/favourite_entity.dart';
 import 'package:demix/features/favorite/presentation/cubit/favorites_cubit.dart';
+
 import 'package:demix/generated/l10n.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class FavoritesView extends StatelessWidget {
   const FavoritesView({super.key});
@@ -27,6 +33,10 @@ class FavoritesView extends StatelessWidget {
   }
 }
 
+// =============================================================================
+// BODY
+// =============================================================================
+
 class _FavoritesBody extends StatelessWidget {
   const _FavoritesBody();
 
@@ -38,6 +48,7 @@ class _FavoritesBody extends StatelessWidget {
       length: 3,
       child: Scaffold(
         backgroundColor: const Color(0xFFF8F8FB),
+
         body: AppPageBackground(
           child: SafeArea(
             bottom: false,
@@ -62,7 +73,9 @@ class _FavoritesBody extends StatelessWidget {
                                 letterSpacing: -0.8,
                               ),
                             ),
+
                             const SizedBox(height: 4),
+
                             Text(
                               'كل حاجاتك المفضلة في مكان واحد',
                               style: TextStyle(
@@ -87,12 +100,12 @@ class _FavoritesBody extends StatelessWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.92),
+                              color: Colors.white.withValues(alpha: .92),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(color: Colors.white),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.03),
+                                  color: Colors.black.withValues(alpha: .03),
                                   blurRadius: 16,
                                   offset: const Offset(0, 6),
                                 ),
@@ -106,7 +119,9 @@ class _FavoritesBody extends StatelessWidget {
                                   color: AppColors.secondary,
                                   size: 15,
                                 ),
+
                                 const SizedBox(width: 5),
+
                                 Text(
                                   '${state.favorites.length}',
                                   style: const TextStyle(
@@ -133,36 +148,45 @@ class _FavoritesBody extends StatelessWidget {
                     radius: 18,
                     child: TabBar(
                       dividerColor: Colors.transparent,
+
                       indicatorSize: TabBarIndicatorSize.tab,
+
                       indicator: BoxDecoration(
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                           colors: [AppColors.primary, AppColors.secondary],
                         ),
                         borderRadius: BorderRadius.circular(14),
                       ),
+
                       labelColor: Colors.white,
+
                       unselectedLabelColor: AppColors.textSecondary,
+
                       labelStyle: const TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w900,
                       ),
+
                       unselectedLabelStyle: const TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
                       ),
+
                       tabs: const [
                         Tab(
                           icon: Icon(Icons.restaurant_rounded, size: 16),
                           text: 'المطاعم',
                           iconMargin: EdgeInsets.only(bottom: 2),
                         ),
+
                         Tab(
                           icon: Icon(Icons.local_cafe_rounded, size: 16),
                           text: 'الكافيهات',
                           iconMargin: EdgeInsets.only(bottom: 2),
                         ),
+
                         Tab(
                           icon: Icon(Icons.fastfood_rounded, size: 16),
                           text: 'المنتجات',
@@ -181,10 +205,18 @@ class _FavoritesBody extends StatelessWidget {
                 Expanded(
                   child: BlocBuilder<FavoritesCubit, FavoritesState>(
                     builder: (context, state) {
+                      // ------------------------------------------------------
+                      // LOADING
+                      // ------------------------------------------------------
+
                       if (state is FavoritesInitial ||
                           state is FavoritesLoading) {
                         return const _FavoritesLoading();
                       }
+
+                      // ------------------------------------------------------
+                      // ERROR
+                      // ------------------------------------------------------
 
                       if (state is FavoritesFailure) {
                         return _FavoritesError(
@@ -195,14 +227,21 @@ class _FavoritesBody extends StatelessWidget {
                         );
                       }
 
+                      // ------------------------------------------------------
+                      // LOADED
+                      // ------------------------------------------------------
+
                       if (state is FavoritesLoaded) {
                         return TabBarView(
                           physics: const BouncingScrollPhysics(),
+
                           children: [
                             _BusinessFavoritesList(
                               favorites: state.restaurants,
                             ),
+
                             _BusinessFavoritesList(favorites: state.cafes),
+
                             _ProductFavoritesList(favorites: state.products),
                           ],
                         );
@@ -252,8 +291,19 @@ class _BusinessFavoritesList extends StatelessWidget {
           index: index,
           child: _BusinessFavoriteCard(
             favorite: favorite,
+
+            // إزالة من المفضلة
             onFavoriteTap: () {
               context.read<FavoritesCubit>().remove(favorite.id);
+            },
+
+            // فتح المطعم / الكافيه
+            onTap: () {
+              final businessId = favorite.itemId.trim();
+
+              if (businessId.isEmpty) return;
+
+              context.push(RoutePaths.restaurantDetails(businessId));
             },
           ),
         );
@@ -266,179 +316,283 @@ class _BusinessFavoritesList extends StatelessWidget {
 // BUSINESS CARD
 // =============================================================================
 
-class _BusinessFavoriteCard extends StatelessWidget {
+class _BusinessFavoriteCard extends StatefulWidget {
   const _BusinessFavoriteCard({
     required this.favorite,
     required this.onFavoriteTap,
+    required this.onTap,
   });
 
   final FavoriteEntity favorite;
   final VoidCallback onFavoriteTap;
+  final VoidCallback onTap;
+
+  @override
+  State<_BusinessFavoriteCard> createState() => _BusinessFavoriteCardState();
+}
+
+class _BusinessFavoriteCardState extends State<_BusinessFavoriteCard> {
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
-    final coverUrl = favorite.coverUrl?.trim() ?? '';
-    final logoUrl = favorite.logoUrl?.trim() ?? '';
+    final coverUrl = widget.favorite.coverUrl?.trim() ?? '';
 
-    final isCafe = favorite.type == FavoriteType.cafe;
+    final logoUrl = widget.favorite.logoUrl?.trim() ?? '';
 
-    return AppGlassCard(
-      padding: EdgeInsets.zero,
-      radius: 24,
-      child: Column(
-        children: [
-          SizedBox(
-            height: 158,
-            child: Stack(
-              clipBehavior: Clip.none,
+    final isCafe = widget.favorite.type == FavoriteType.cafe;
+
+    return AnimatedScale(
+      scale: _pressed ? .975 : 1,
+      duration: const Duration(milliseconds: 110),
+      curve: Curves.easeOutCubic,
+
+      child: AppGlassCard(
+        padding: EdgeInsets.zero,
+        radius: 24,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(24),
+
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+
+            splashColor: AppColors.primary.withValues(alpha: .07),
+
+            highlightColor: AppColors.primary.withValues(alpha: .035),
+
+            onTapDown: (_) {
+              setState(() {
+                _pressed = true;
+              });
+            },
+
+            onTapCancel: () {
+              setState(() {
+                _pressed = false;
+              });
+            },
+
+            onTap: () {
+              setState(() {
+                _pressed = false;
+              });
+
+              widget.onTap();
+            },
+
+            child: Column(
               children: [
-                // Cover
-                Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
-                    ),
-                    child: coverUrl.isNotEmpty
-                        ? AppCachedImage(imageUrl: coverUrl, fit: BoxFit.cover)
-                        : Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppColors.primary,
-                                  AppColors.secondary,
-                                ],
-                              ),
-                            ),
-                            child: Icon(
-                              isCafe
-                                  ? Icons.local_cafe_rounded
-                                  : Icons.restaurant_rounded,
-                              color: Colors.white,
-                              size: 42,
-                            ),
-                          ),
-                  ),
-                ),
-
-                // Cover Overlay
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.35),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Favorite
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: _FavoriteButton(onTap: onFavoriteTap),
-                ),
-
-                // Logo
-                Positioned(
-                  left: 16,
-                  bottom: -30,
-                  child: Container(
-                    width: 68,
-                    height: 68,
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.10),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: ClipOval(
-                      child: logoUrl.isNotEmpty
-                          ? AppCachedImage(imageUrl: logoUrl, fit: BoxFit.cover)
-                          : Container(
-                              color: AppColors.primary.withValues(alpha: 0.07),
-                              child: Icon(
-                                isCafe
-                                    ? Icons.local_cafe_rounded
-                                    : Icons.restaurant_rounded,
-                                color: AppColors.primary,
-                                size: 28,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Info
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 37, 16, 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                // ==========================================================
+                // COVER
+                // ==========================================================
+                SizedBox(
+                  height: 158,
+                  child: Stack(
+                    clipBehavior: Clip.none,
                     children: [
-                      Text(
-                        favorite.displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
+                      // ----------------------------------------------------
+                      // COVER IMAGE
+                      // ----------------------------------------------------
+                      Positioned.fill(
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(24),
+                          ),
+
+                          child: coverUrl.isNotEmpty
+                              ? AppCachedImage(
+                                  imageUrl: coverUrl,
+                                  fit: BoxFit.cover,
+                                )
+                              : Container(
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        AppColors.primary,
+                                        AppColors.secondary,
+                                      ],
+                                    ),
+                                  ),
+
+                                  child: Icon(
+                                    isCafe
+                                        ? Icons.local_cafe_rounded
+                                        : Icons.restaurant_rounded,
+                                    color: Colors.white,
+                                    size: 42,
+                                  ),
+                                ),
                         ),
                       ),
-                      const SizedBox(height: 7),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            color: Color(0xFFFFB800),
-                            size: 17,
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            (favorite.rating ?? 0).toStringAsFixed(1),
-                            style: const TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w900,
+
+                      // ----------------------------------------------------
+                      // OVERLAY
+                      // ----------------------------------------------------
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: .38),
+                              ],
                             ),
                           ),
-                          if ((favorite.reviewCount ?? 0) > 0) ...[
-                            const SizedBox(width: 5),
-                            Text(
-                              '(${favorite.reviewCount})',
-                              style: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w600,
+                        ),
+                      ),
+
+                      // ----------------------------------------------------
+                      // TAP INDICATOR
+                      // ----------------------------------------------------
+                      Positioned(
+                        left: 14,
+                        top: 14,
+                        child: Container(
+                          width: 35,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: .92),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 14,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+
+                      // ----------------------------------------------------
+                      // FAVORITE
+                      // ----------------------------------------------------
+                      Positioned(
+                        top: 12,
+                        right: 12,
+                        child: _FavoriteButton(onTap: widget.onFavoriteTap),
+                      ),
+
+                      // ----------------------------------------------------
+                      // LOGO
+                      // ----------------------------------------------------
+                      Positioned(
+                        left: 16,
+                        bottom: -30,
+                        child: Container(
+                          width: 68,
+                          height: 68,
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: .12),
+                                blurRadius: 18,
+                                offset: const Offset(0, 7),
                               ),
-                            ),
-                          ],
-                        ],
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: logoUrl.isNotEmpty
+                                ? AppCachedImage(
+                                    imageUrl: logoUrl,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Container(
+                                    color: AppColors.primary.withValues(
+                                      alpha: .08,
+                                    ),
+                                    child: Icon(
+                                      isCafe
+                                          ? Icons.local_cafe_rounded
+                                          : Icons.restaurant_rounded,
+                                      color: AppColors.primary,
+                                      size: 28,
+                                    ),
+                                  ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                _BusinessTypeBadge(text: isCafe ? 'كافيه' : 'مطعم'),
+
+                // ==========================================================
+                // INFO
+                // ==========================================================
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 37, 16, 16),
+
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                          children: [
+                            Text(
+                              widget.favorite.displayName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+
+                            const SizedBox(height: 7),
+
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.star_rounded,
+                                  color: Color(0xFFFFB800),
+                                  size: 17,
+                                ),
+
+                                const SizedBox(width: 3),
+
+                                Text(
+                                  (widget.favorite.rating ?? 0).toStringAsFixed(
+                                    1,
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+
+                                if ((widget.favorite.reviewCount ?? 0) > 0) ...[
+                                  const SizedBox(width: 5),
+
+                                  Text(
+                                    '(${widget.favorite.reviewCount})',
+                                    style: TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      _BusinessTypeBadge(text: isCafe ? 'كافيه' : 'مطعم'),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -468,15 +622,34 @@ class _ProductFavoritesList extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       itemCount: favorites.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
+
       itemBuilder: (context, index) {
         final favorite = favorites[index];
 
         return _FavoriteAnimatedEntry(
           index: index,
+
           child: _ProductFavoriteCard(
             favorite: favorite,
+
             onFavoriteTap: () {
               context.read<FavoritesCubit>().remove(favorite.id);
+            },
+
+            onTap: () {
+              final productId = favorite.itemId.trim();
+              final businessId = favorite.businessId?.trim();
+
+              if (productId.isEmpty ||
+                  businessId == null ||
+                  businessId.isEmpty) {
+                return;
+              }
+
+              context.push(
+                RoutePaths.productDetails(productId),
+                extra: favorite,
+              );
             },
           ),
         );
@@ -484,155 +657,237 @@ class _ProductFavoritesList extends StatelessWidget {
     );
   }
 }
-
 // =============================================================================
 // PRODUCT CARD
 // =============================================================================
 
-class _ProductFavoriteCard extends StatelessWidget {
+class _ProductFavoriteCard extends StatefulWidget {
   const _ProductFavoriteCard({
     required this.favorite,
     required this.onFavoriteTap,
+    required this.onTap,
   });
 
   final FavoriteEntity favorite;
   final VoidCallback onFavoriteTap;
+  final VoidCallback onTap;
+
+  @override
+  State<_ProductFavoriteCard> createState() => _ProductFavoriteCardState();
+}
+
+class _ProductFavoriteCardState extends State<_ProductFavoriteCard> {
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
-    final productImage = favorite.imageUrl?.trim() ?? '';
-    final businessLogo = favorite.businessLogo?.trim() ?? '';
+    final productImage = widget.favorite.imageUrl?.trim() ?? '';
 
-    return AppGlassCard(
-      padding: const EdgeInsets.all(10),
-      radius: 22,
-      child: Row(
-        children: [
-          // Product Image
-          Container(
-            width: 104,
-            height: 104,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF2F2F5),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: productImage.isNotEmpty
-                ? AppCachedImage(imageUrl: productImage, fit: BoxFit.cover)
-                : Icon(
-                    Icons.fastfood_rounded,
-                    color: AppColors.textSecondary,
-                    size: 32,
-                  ),
-          ),
+    final businessLogo = widget.favorite.businessLogo?.trim() ?? '';
 
-          const SizedBox(width: 13),
+    return AnimatedScale(
+      scale: _pressed ? .975 : 1,
+      duration: const Duration(milliseconds: 110),
+      curve: Curves.easeOutCubic,
 
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: AppGlassCard(
+        padding: const EdgeInsets.all(10),
+        radius: 22,
+
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(22),
+
+          child: InkWell(
+            borderRadius: BorderRadius.circular(22),
+
+            splashColor: AppColors.primary.withValues(alpha: .07),
+
+            highlightColor: AppColors.primary.withValues(alpha: .035),
+
+            onTapDown: (_) {
+              setState(() {
+                _pressed = true;
+              });
+            },
+
+            onTapCancel: () {
+              setState(() {
+                _pressed = false;
+              });
+            },
+
+            onTap: () {
+              setState(() {
+                _pressed = false;
+              });
+
+              widget.onTap();
+            },
+
+            child: Row(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        favorite.displayName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          height: 1.25,
+                // ==========================================================
+                // IMAGE
+                // ==========================================================
+                Container(
+                  width: 104,
+                  height: 104,
+
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF2F2F5),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+
+                  clipBehavior: Clip.antiAlias,
+
+                  child: productImage.isNotEmpty
+                      ? AppCachedImage(
+                          imageUrl: productImage,
+                          fit: BoxFit.cover,
+                        )
+                      : Icon(
+                          Icons.fastfood_rounded,
+                          color: AppColors.textSecondary,
+                          size: 32,
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 7),
-                    _FavoriteButton(onTap: onFavoriteTap, compact: true),
-                  ],
                 ),
 
-                const SizedBox(height: 9),
+                const SizedBox(width: 13),
 
-                // Business
-                if ((favorite.businessName ?? '').trim().isNotEmpty)
-                  Row(
+                // ==========================================================
+                // INFO
+                // ==========================================================
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
                     children: [
-                      Container(
-                        width: 27,
-                        height: 27,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF2F2F5),
-                          shape: BoxShape.circle,
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: businessLogo.isNotEmpty
-                            ? AppCachedImage(
-                                imageUrl: businessLogo,
-                                fit: BoxFit.cover,
-                              )
-                            : Icon(
-                                Icons.storefront_rounded,
-                                color: AppColors.textSecondary,
-                                size: 14,
-                              ),
-                      ),
-                      const SizedBox(width: 7),
-                      Expanded(
-                        child: Text(
-                          favorite.businessName!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                const SizedBox(height: 10),
-
-                // Price + Rating
-                Row(
-                  children: [
-                    if (favorite.price != null)
-                      Text(
-                        '${favorite.price!.toStringAsFixed(0)} ج',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    const Spacer(),
-                    if (favorite.businessRating != null)
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+
                         children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 16,
-                            color: Color(0xFFFFB800),
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            favorite.businessRating!.toStringAsFixed(1),
-                            style: const TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w900,
+                          Expanded(
+                            child: Text(
+                              widget.favorite.displayName,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                                height: 1.25,
+                              ),
                             ),
+                          ),
+
+                          const SizedBox(width: 7),
+
+                          _FavoriteButton(
+                            onTap: widget.onFavoriteTap,
+                            compact: true,
                           ),
                         ],
                       ),
-                  ],
+
+                      const SizedBox(height: 9),
+
+                      // ----------------------------------------------------
+                      // BUSINESS
+                      // ----------------------------------------------------
+                      if ((widget.favorite.businessName ?? '')
+                          .trim()
+                          .isNotEmpty)
+                        Row(
+                          children: [
+                            Container(
+                              width: 27,
+                              height: 27,
+
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFF2F2F5),
+                                shape: BoxShape.circle,
+                              ),
+
+                              clipBehavior: Clip.antiAlias,
+
+                              child: businessLogo.isNotEmpty
+                                  ? AppCachedImage(
+                                      imageUrl: businessLogo,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Icon(
+                                      Icons.storefront_rounded,
+                                      color: AppColors.textSecondary,
+                                      size: 14,
+                                    ),
+                            ),
+
+                            const SizedBox(width: 7),
+
+                            Expanded(
+                              child: Text(
+                                widget.favorite.businessName!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                      const SizedBox(height: 10),
+
+                      // ----------------------------------------------------
+                      // PRICE + RATING
+                      // ----------------------------------------------------
+                      Row(
+                        children: [
+                          if (widget.favorite.price != null)
+                            Text(
+                              '${widget.favorite.price!.toStringAsFixed(0)} ج',
+                              style: const TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+
+                          const Spacer(),
+
+                          if (widget.favorite.businessRating != null)
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.star_rounded,
+                                  size: 16,
+                                  color: Color(0xFFFFB800),
+                                ),
+
+                                const SizedBox(width: 3),
+
+                                Text(
+                                  widget.favorite.businessRating!
+                                      .toStringAsFixed(1),
+                                  style: const TextStyle(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -642,30 +897,78 @@ class _ProductFavoriteCard extends StatelessWidget {
 // FAVORITE BUTTON
 // =============================================================================
 
-class _FavoriteButton extends StatelessWidget {
+class _FavoriteButton extends StatefulWidget {
   const _FavoriteButton({required this.onTap, this.compact = false});
 
   final VoidCallback onTap;
   final bool compact;
 
   @override
-  Widget build(BuildContext context) {
-    final size = compact ? 34.0 : 42.0;
-    final iconSize = compact ? 17.0 : 21.0;
+  State<_FavoriteButton> createState() => _FavoriteButtonState();
+}
 
-    return Material(
-      color: Colors.white.withValues(alpha: 0.94),
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: SizedBox(
-          width: size,
-          height: size,
-          child: Icon(
-            Icons.favorite_rounded,
-            size: iconSize,
-            color: AppColors.secondary,
+class _FavoriteButtonState extends State<_FavoriteButton> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = widget.compact ? 34.0 : 42.0;
+
+    final iconSize = widget.compact ? 17.0 : 21.0;
+
+    return AnimatedScale(
+      scale: _pressed ? .82 : 1,
+
+      duration: const Duration(milliseconds: 130),
+
+      curve: Curves.easeOutBack,
+
+      child: Material(
+        color: Colors.white.withValues(alpha: .94),
+
+        shape: const CircleBorder(),
+
+        child: InkWell(
+          customBorder: const CircleBorder(),
+
+          onTapDown: (_) {
+            setState(() {
+              _pressed = true;
+            });
+          },
+
+          onTapCancel: () {
+            setState(() {
+              _pressed = false;
+            });
+          },
+
+          onTap: () {
+            setState(() {
+              _pressed = false;
+            });
+
+            widget.onTap();
+          },
+
+          child: SizedBox(
+            width: size,
+            height: size,
+
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 220),
+
+              transitionBuilder: (child, animation) {
+                return ScaleTransition(scale: animation, child: child);
+              },
+
+              child: Icon(
+                Icons.favorite_rounded,
+                key: ValueKey(widget.compact),
+                size: iconSize,
+                color: AppColors.secondary,
+              ),
+            ),
           ),
         ),
       ),
@@ -686,13 +989,16 @@ class _BusinessTypeBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.07),
+        color: AppColors.primary.withValues(alpha: .07),
+
         borderRadius: BorderRadius.circular(11),
       ),
+
       child: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           color: AppColors.primary,
           fontSize: 9.5,
           fontWeight: FontWeight.w900,
@@ -722,47 +1028,61 @@ class _EmptyState extends StatelessWidget {
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
+
         child: AppGlassCard(
           padding: const EdgeInsets.fromLTRB(26, 30, 26, 27),
           radius: 25,
+
           child: Column(
             mainAxisSize: MainAxisSize.min,
+
             children: [
               TweenAnimationBuilder<double>(
                 duration: const Duration(milliseconds: 700),
                 curve: Curves.elasticOut,
-                tween: Tween(begin: 0.80, end: 1.0),
+                tween: Tween(begin: .80, end: 1.0),
+
                 builder: (_, value, child) {
                   return Transform.scale(scale: value, child: child);
                 },
+
                 child: Container(
                   width: 88,
                   height: 88,
+
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
+
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.primary.withValues(alpha: 0.09),
-                        AppColors.secondary.withValues(alpha: 0.10),
+                        AppColors.primary.withValues(alpha: .09),
+                        AppColors.secondary.withValues(alpha: .10),
                       ],
                     ),
                   ),
+
                   child: Icon(icon, size: 40, color: AppColors.secondary),
                 ),
               ),
+
               const SizedBox(height: 20),
+
               Text(
                 title,
                 textAlign: TextAlign.center,
+
                 style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w900,
                 ),
               ),
+
               const SizedBox(height: 8),
+
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
+
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 11.5,
@@ -789,15 +1109,23 @@ class _FavoritesLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 2, 16, 30),
+
       physics: const BouncingScrollPhysics(),
+
       itemCount: 5,
+
       separatorBuilder: (_, __) => const SizedBox(height: 13),
-      itemBuilder: (_, index) {
+
+      itemBuilder: (_, __) {
         return const _FavoriteSkeleton();
       },
     );
   }
 }
+
+// =============================================================================
+// SKELETON
+// =============================================================================
 
 class _FavoriteSkeleton extends StatefulWidget {
   const _FavoriteSkeleton();
@@ -830,6 +1158,7 @@ class _FavoriteSkeletonState extends State<_FavoriteSkeleton>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
+
       builder: (_, __) {
         final value = Curves.easeInOut.transform(_controller.value);
 
@@ -842,42 +1171,55 @@ class _FavoriteSkeletonState extends State<_FavoriteSkeleton>
         return AppGlassCard(
           padding: const EdgeInsets.all(10),
           radius: 22,
+
           child: Row(
             children: [
               Container(
                 width: 104,
                 height: 104,
+
                 decoration: BoxDecoration(
                   color: skeletonColor,
+
                   borderRadius: BorderRadius.circular(18),
                 ),
               ),
+
               const SizedBox(width: 13),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+
                   children: [
                     Container(
                       width: 145,
                       height: 13,
+
                       decoration: BoxDecoration(
                         color: skeletonColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+
                     const SizedBox(height: 10),
+
                     Container(
                       width: 105,
                       height: 10,
+
                       decoration: BoxDecoration(
                         color: skeletonColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+
                     const SizedBox(height: 14),
+
                     Container(
                       width: 72,
                       height: 12,
+
                       decoration: BoxDecoration(
                         color: skeletonColor,
                         borderRadius: BorderRadius.circular(8),
@@ -909,51 +1251,67 @@ class _FavoritesError extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
+
         child: AppGlassCard(
           padding: const EdgeInsets.all(25),
           radius: 24,
+
           child: Column(
             mainAxisSize: MainAxisSize.min,
+
             children: [
               Container(
                 width: 70,
                 height: 70,
+
                 decoration: BoxDecoration(
-                  color: AppColors.secondary.withValues(alpha: 0.08),
+                  color: AppColors.secondary.withValues(alpha: .08),
                   shape: BoxShape.circle,
                 ),
+
                 child: Icon(
                   Icons.error_outline_rounded,
                   color: AppColors.secondary,
                   size: 34,
                 ),
               ),
+
               const SizedBox(height: 15),
+
               const Text(
                 'حصل خطأ',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
               ),
+
               const SizedBox(height: 8),
+
               Text(
                 message,
                 textAlign: TextAlign.center,
+
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 11.5,
                   height: 1.5,
                 ),
               ),
+
               const SizedBox(height: 17),
+
               SizedBox(
                 height: 45,
+
                 child: FilledButton(
                   onPressed: onRetry,
+
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.primary,
+
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
+
                   child: const Text(
                     'إعادة المحاولة',
                     style: TextStyle(fontWeight: FontWeight.w800),
@@ -979,38 +1337,52 @@ class _GuestFavoritesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FB),
+
       body: AppPageBackground(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
+
             child: AppGlassCard(
               padding: const EdgeInsets.all(26),
               radius: 24,
+
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+
                 children: [
                   Container(
                     width: 82,
                     height: 82,
+
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.secondary.withValues(alpha: 0.08),
+
+                      color: AppColors.secondary.withValues(alpha: .08),
                     ),
+
                     child: const Icon(
                       Icons.favorite_border_rounded,
                       size: 40,
                       color: AppColors.secondary,
                     ),
                   ),
+
                   const SizedBox(height: 18),
+
                   const Text(
                     'سجل الدخول أولًا',
+
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
                   ),
+
                   const SizedBox(height: 7),
+
                   Text(
                     'سجل الدخول عشان تحفظ وتعرض المفضلة على جهازك.',
+
                     textAlign: TextAlign.center,
+
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 11.5,
@@ -1042,17 +1414,23 @@ class _FavoriteAnimatedEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 320 + (index * 65)),
+
       curve: Curves.easeOutCubic,
+
       tween: Tween(begin: 0, end: 1),
+
       builder: (_, value, child) {
         return Opacity(
           opacity: value,
+
           child: Transform.translate(
             offset: Offset(0, 18 * (1 - value)),
-            child: child,
+
+            child: Transform.scale(scale: .96 + (.04 * value), child: child),
           ),
         );
       },
+
       child: child,
     );
   }
