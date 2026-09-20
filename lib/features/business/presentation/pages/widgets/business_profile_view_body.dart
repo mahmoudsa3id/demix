@@ -1,7 +1,15 @@
-import 'package:demix/core/routing/navigation.dart';
 import 'package:demix/core/widgets/app_background_page.dart';
+import 'package:demix/features/business/domain/entities/product_category.dart';
 import 'package:demix/features/business/presentation/cubit/business_profile_cubit.dart';
 import 'package:demix/features/business/presentation/cubit/business_profile_state.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_profile_cart_bar.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_profile_category_navigator.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_profile_empty_product.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_profile_hero.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_profile_intro.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_profile_product_item.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_profile_skeletion.dart';
+import 'package:demix/features/business/presentation/pages/widgets/current_category_heading.dart';
 import 'package:demix/features/orders/presentation/pages/widgets/orders_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,7 +41,7 @@ class _BusinessProfileViewBodyState extends State<BusinessProfileViewBody> {
 
             if (state is BusinessProfileInitial ||
                 state is BusinessProfileLoading) {
-              return const _ProfileSkeleton();
+              return const BusinessProfileSkeleton();
             }
 
             // =================================================================
@@ -90,12 +98,16 @@ class _BusinessProfileViewBodyState extends State<BusinessProfileViewBody> {
                 // =============================================================
                 // HERO
                 // =============================================================
-                SliverToBoxAdapter(child: _EditorialHero(business: business)),
+                SliverToBoxAdapter(
+                  child: BusinessProfileHero(business: business),
+                ),
 
                 // =============================================================
                 // BUSINESS INTRO
                 // =============================================================
-                SliverToBoxAdapter(child: _BusinessIntro(business: business)),
+                SliverToBoxAdapter(
+                  child: BusinessProfileIntro(business: business),
+                ),
 
                 // =============================================================
                 // STICKY CATEGORY NAVIGATION
@@ -103,8 +115,8 @@ class _BusinessProfileViewBodyState extends State<BusinessProfileViewBody> {
                 if (categories.isNotEmpty)
                   SliverPersistentHeader(
                     pinned: true,
-                    delegate: _EditorialCategoryHeaderDelegate(
-                      child: _EditorialCategoryNavigator(
+                    delegate: CategoryHeaderDelegate(
+                      child: BusinessProfileCategoryNavigator(
                         categories: categories,
                         selectedCategory: selectedCategory,
                         onSelected: (index) {
@@ -124,7 +136,7 @@ class _BusinessProfileViewBodyState extends State<BusinessProfileViewBody> {
                 // CATEGORY TITLE
                 // =============================================================
                 SliverToBoxAdapter(
-                  child: _CurrentCategoryHeading(
+                  child: CurrentCategoryHeading(
                     title: selectedTitle,
                     count: products.length,
                     index: selectedCategory,
@@ -136,7 +148,7 @@ class _BusinessProfileViewBodyState extends State<BusinessProfileViewBody> {
                 // PRODUCTS
                 // =============================================================
                 if (products.isEmpty)
-                  const SliverToBoxAdapter(child: _EmptyProducts())
+                  const SliverToBoxAdapter(child: BusinessProfileEmptyProduct())
                 else
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(18, 0, 18, 150),
@@ -146,7 +158,7 @@ class _BusinessProfileViewBodyState extends State<BusinessProfileViewBody> {
                         return const SizedBox(height: 4);
                       },
                       itemBuilder: (context, index) {
-                        return _EditorialProductItem(
+                        return BusinessProfileProductItem(
                           key: ValueKey(
                             '${products[index].id}-$selectedCategory',
                           ),
@@ -162,7 +174,7 @@ class _BusinessProfileViewBodyState extends State<BusinessProfileViewBody> {
           },
         ),
       ),
-      bottomNavigationBar: const _CartBar(),
+      bottomNavigationBar: const BusinessProfileCartBar(),
     );
   }
 

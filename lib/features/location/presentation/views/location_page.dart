@@ -1,5 +1,5 @@
 import 'package:demix/core/routing/route_paths.dart';
-import 'package:demix/features/location/presentation/pages/widgets/location_loading_view.dart';
+import 'package:demix/features/location/presentation/views/widgets/location_loading_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';

@@ -1,12 +1,10 @@
 import 'package:demix/constants/constants.dart';
-import 'package:demix/core/db/cached_images/cached_manager.dart';
 import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/theme/app_radius.dart';
 import 'package:demix/core/widgets/app_cached_image.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 Widget homeViewCatogories(BuildContext context, S s) {

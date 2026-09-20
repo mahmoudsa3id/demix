@@ -1,10 +1,7 @@
 import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
-import 'package:demix/core/utils/helper/helper_widgets.dart';
-import 'package:demix/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class BottomNav extends StatelessWidget {

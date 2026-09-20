@@ -1,4 +1,5 @@
 import 'package:demix/core/theme/app_colors.dart';
+import 'package:demix/core/widgets/snack_bar/app_snack_bar.dart';
 import 'package:demix/features/account/presentation/cubit/account_cubit.dart';
 import 'package:demix/features/account/presentation/cubit/account_state.dart';
 import 'package:demix/features/account/presentation/view/account_view_shell.dart';
@@ -57,17 +58,13 @@ class _EditProfileViewState extends State<EditProfileView> {
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
         if (state is AccountLoaded) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(s.profileUpdated)));
+          AppSnackBar.build(message: s.profileUpdated);
 
           context.pop();
         }
 
         if (state is AccountFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.failure.message)));
+          AppSnackBar.build(message: state.failure.message);
         }
       },
       child: AccountViewShell(

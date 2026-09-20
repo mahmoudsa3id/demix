@@ -20,7 +20,7 @@ import 'package:demix/features/business/domain/entities/product.dart';
 import 'package:demix/features/business/presentation/cubit/business_profile_cubit.dart';
 import 'package:demix/features/business/presentation/cubit/business_profile_state.dart';
 
-import 'package:demix/features/business/presentation/pages/business_profile_page.dart';
+import 'package:demix/features/business/presentation/pages/business_profile_view.dart';
 import 'package:demix/features/business/presentation/pages/business_view.dart';
 
 import 'package:demix/features/cart/presentation/pages/cart_page.dart';

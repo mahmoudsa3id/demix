@@ -3,8 +3,14 @@ import 'package:demix/core/widgets/app_background_page.dart';
 import 'package:demix/features/business/domain/entities/business.dart';
 import 'package:demix/features/business/presentation/cubit/business_cubit.dart';
 import 'package:demix/features/business/presentation/cubit/business_state.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_animated_item.dart';
 import 'package:demix/features/business/presentation/pages/widgets/business_category_icon.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_empty_state.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_loading_content.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_search_bar.dart';
 import 'package:demix/features/business/presentation/pages/widgets/business_top_button.dart';
+import 'package:demix/features/business/presentation/pages/widgets/business_search_empty_state.dart';
+import 'package:demix/features/business/presentation/widgets/business_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -156,7 +162,7 @@ class _BusinessViewBodyState extends State<BusinessViewBody> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _SearchBar(
+                  child: BusinessSearchBar(
                     controller: _searchController,
                     focusNode: _searchFocusNode,
                     isCafe: widget.isCafe,
@@ -252,7 +258,9 @@ class _BusinessViewBodyState extends State<BusinessViewBody> {
                   if (state is BusinessInitial || state is BusinessLoading) {
                     return const SliverPadding(
                       padding: EdgeInsets.fromLTRB(16, 0, 16, 35),
-                      sliver: SliverToBoxAdapter(child: _LoadingContent()),
+                      sliver: SliverToBoxAdapter(
+                        child: BusinessLoadingContent(),
+                      ),
                     );
                   }
 
@@ -263,7 +271,7 @@ class _BusinessViewBodyState extends State<BusinessViewBody> {
                   if (state is BusinessFailure) {
                     return SliverFillRemaining(
                       hasScrollBody: false,
-                      child: _EmptyState(
+                      child: BusinessEmptyState(
                         icon: Icons.wifi_off_rounded,
                         title: 'حصلت مشكلة',
                         message: state.message,
@@ -285,7 +293,7 @@ class _BusinessViewBodyState extends State<BusinessViewBody> {
                     if (businesses.isEmpty) {
                       return SliverFillRemaining(
                         hasScrollBody: false,
-                        child: _SearchEmptyState(
+                        child: BusinessSearchEmptyState(
                           isSearch: _query.trim().isNotEmpty,
                           isCafe: widget.isCafe,
                           query: _query,
@@ -302,7 +310,7 @@ class _BusinessViewBodyState extends State<BusinessViewBody> {
                           return const SizedBox(height: 16);
                         },
                         itemBuilder: (context, index) {
-                          return _BusinessAnimatedItem(
+                          return BusinessAnimatedItem(
                             index: index,
                             child: BusinessCard(business: businesses[index]),
                           );

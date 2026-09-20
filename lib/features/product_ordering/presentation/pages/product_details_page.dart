@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:demix/core/di/injection.dart';
 import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
@@ -93,7 +92,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
         final theme = Theme.of(pageContext);
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF7F7F9),
           body: CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
@@ -139,7 +137,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
 
   SliverAppBar _buildHeroAppBar(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-
+    final user = FirebaseAuth.instance.currentUser;
     final heroSize = width.clamp(320.0, 500.0) * .60;
 
     return SliverAppBar(
@@ -158,7 +156,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
         ),
       ),
       actions: [
-        if (FirebaseAuth.instance.currentUser == null)
+        if (user == null)
           _GlassCircleButton(
             icon: Icons.favorite_border_rounded,
             onTap: () {
@@ -486,16 +484,7 @@ class _ProductHero extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(
-          imageUrl: backgroundImage ?? '',
-          fit: BoxFit.cover,
-          color: Colors.black.withOpacity(.28),
-          colorBlendMode: BlendMode.darken,
-          errorWidget: (_, __, ___) {
-            return Container(color: const Color(0xFFEFEFF3));
-          },
-        ),
-
+        AppCachedImage(imageUrl: backgroundImage ?? ''),
         BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
           child: Container(color: Colors.black.withOpacity(.20)),

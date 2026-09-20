@@ -17,13 +17,13 @@ class SavedLocationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<SavedLocationCubit>(
       create: (_) => getIt<SavedLocationCubit>()..load(),
-      child: const _SavedLocationsView(),
+      child: const SavedLocationsViewBody(),
     );
   }
 }
 
-class _SavedLocationsView extends StatelessWidget {
-  const _SavedLocationsView();
+class SavedLocationsViewBody extends StatelessWidget {
+  const SavedLocationsViewBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ class _SavedLocationsView extends StatelessWidget {
                 return const _EmptyView();
               }
 
-              return _SavedLocationContent(location: location);
+              return SavedLocationContent(location: location);
             }
 
             return const SizedBox.shrink();
@@ -154,8 +154,8 @@ class _SavedLocationsView extends StatelessWidget {
 // CONTENT
 // ============================================================================
 
-class _SavedLocationContent extends StatelessWidget {
-  const _SavedLocationContent({required this.location});
+class SavedLocationContent extends StatelessWidget {
+  const SavedLocationContent({super.key, required this.location});
 
   final LocationEntity location;
 
@@ -192,7 +192,7 @@ class _SavedLocationContent extends StatelessWidget {
           ),
         ),
 
-        _LocationCard(location: location),
+        SavedLocationCard(location: location),
       ],
     );
   }
@@ -202,8 +202,8 @@ class _SavedLocationContent extends StatelessWidget {
 // LOCATION CARD
 // ============================================================================
 
-class _LocationCard extends StatelessWidget {
-  const _LocationCard({required this.location});
+class SavedLocationCard extends StatelessWidget {
+  const SavedLocationCard({super.key, required this.location});
 
   final LocationEntity location;
 

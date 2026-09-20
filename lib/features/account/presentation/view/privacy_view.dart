@@ -1,4 +1,4 @@
-import 'package:demix/features/account/presentation/view/simple_account_page.dart';
+import 'package:demix/features/account/presentation/view/simple_account_view.dart';
 import 'package:demix/generated/l10n.dart';
 import 'package:flutter/material.dart';
 

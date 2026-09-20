@@ -1,28 +1,7 @@
+import 'package:demix/features/orders/presentation/cubit/order_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/order_entity.dart';
 import '../../domain/use_cases/create_order_use_case.dart';
-
-sealed class OrderState {
-  const OrderState();
-}
-
-class OrderInitial extends OrderState {
-  const OrderInitial();
-}
-
-class OrderSubmitting extends OrderState {
-  const OrderSubmitting();
-}
-
-class OrderCreated extends OrderState {
-  const OrderCreated(this.orderId);
-  final String orderId;
-}
-
-class OrderFailure extends OrderState {
-  const OrderFailure(this.message);
-  final String message;
-}
 
 class OrderCubit extends Cubit<OrderState> {
   OrderCubit({required this._createOrder}) : super(const OrderInitial());
