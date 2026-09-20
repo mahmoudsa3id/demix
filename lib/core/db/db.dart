@@ -5,7 +5,7 @@ class AppDatabase {
   AppDatabase();
 
   static const String _databaseName = 'demix.db';
-  static const int _databaseVersion = 2;
+  static const int _databaseVersion = 3;
 
   Database? _database;
 
@@ -30,15 +30,18 @@ class AppDatabase {
   Future<void> _onCreate(Database db, int version) async {
     await _createSavedLocationsTable(db);
     await _createCartItemsTable(db);
+    await _createFavoritesTable(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
-      // أثناء التطوير، نحذف جدول الكارت القديم
-      // ونعيد إنشاءه بالـ schema الجديد.
       await db.execute('DROP TABLE IF EXISTS cart_items');
 
       await _createCartItemsTable(db);
+    }
+
+    if (oldVersion < 3) {
+      await _createFavoritesTable(db);
     }
   }
 
@@ -110,6 +113,52 @@ class AppDatabase {
         business_open TEXT,
         business_close TEXT
       )
+    ''');
+  }
+
+  Future<void> _createFavoritesTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE favorites (
+        favorite_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+
+        type TEXT NOT NULL,
+        item_id TEXT NOT NULL,
+
+        name TEXT NOT NULL,
+        name_ar TEXT,
+
+        image_url TEXT,
+
+        cover_url TEXT,
+        logo_url TEXT,
+
+        rating REAL,
+        review_count INTEGER,
+
+        price REAL,
+
+        business_id TEXT,
+        business_name TEXT,
+        business_logo TEXT,
+        business_rating REAL,
+
+        created_at INTEGER NOT NULL,
+
+        PRIMARY KEY (user_id, favorite_id),
+
+        UNIQUE (user_id, type, item_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_favorites_user_id
+      ON favorites(user_id)
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_favorites_type
+      ON favorites(user_id, type)
     ''');
   }
 

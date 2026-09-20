@@ -1,3 +1,4 @@
+import 'package:demix/core/di/injection.dart';
 import 'package:demix/core/routing/navigation.dart';
 import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/widgets/bottom_nav.dart';

@@ -1,3 +1,4 @@
+import 'package:demix/core/di/injection.dart';
 import 'package:demix/core/utils/helper/helper_widgets.dart';
 import 'package:demix/features/business/presentation/cubit/business_cubit.dart';
 import 'package:demix/features/business/presentation/cubit/business_state.dart';
@@ -13,7 +14,6 @@ import 'package:demix/features/home/presentation/views/widgets/home_view_search.
 import 'package:demix/features/home/presentation/views/widgets/product_card_list.dart';
 import 'package:demix/features/location/presentation/cubit/saved_location_cubit.dart';
 import 'package:demix/generated/l10n.dart';
-import 'package:demix/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

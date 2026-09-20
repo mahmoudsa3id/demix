@@ -1,3 +1,4 @@
+import 'package:demix/core/di/injection.dart';
 import 'package:demix/core/routing/route_paths.dart';
 import 'package:demix/core/theme/app_colors.dart';
 import 'package:demix/core/widgets/app_background_page.dart';

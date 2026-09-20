@@ -1,10 +1,6 @@
-import 'package:demix/core/di/db_di.dart';
 import 'package:demix/core/db/shared_preferance.dart';
-import 'package:demix/core/di/account_di.dart';
-import 'package:demix/core/di/auth_di.dart';
-import 'package:demix/core/di/business_di.dart';
-import 'package:demix/core/di/location_di.dart';
-import 'package:demix/core/di/ordering_di.dart';
+import 'package:demix/core/di/injection.dart';
+
 import 'package:demix/core/widgets/snack_bar/app_snack_bar_service.dart';
 
 import 'package:demix/features/account/presentation/cubit/account_cubit.dart';
@@ -22,9 +18,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:get_it/get_it.dart';
-
-final GetIt getIt = GetIt.instance;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,22 +37,7 @@ Future<void> main() async {
   // ---------------------------------------------------------------------------
   // Dependency Injection
   // ---------------------------------------------------------------------------
-
-  setupDatabaseDependencies(getIt);
-
-  setupAuthDependencies(getIt);
-
-  setupLocationDependencies(
-    getIt,
-    userAgent: 'DeMiX/1.0 (mahmoud.said.developer@gmail.com)',
-    languageCode: 'ar',
-  );
-
-  setupBusinessDependencies(getIt);
-
-  setupOrderingDependencies(getIt);
-
-  setupAccountDependencies(getIt);
+  setupDependencies();
 
   // ---------------------------------------------------------------------------
   // Run App
