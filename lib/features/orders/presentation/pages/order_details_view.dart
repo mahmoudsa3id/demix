@@ -9,13 +9,12 @@ import 'package:demix/features/orders/presentation/cubit/order_tracking_cubit.da
 import 'package:demix/features/orders/presentation/pages/order_success_page.dart';
 import 'package:demix/features/orders/presentation/pages/widgets/section.dart';
 import 'package:demix/features/orders/presentation/pages/widgets/status_time_line.dart';
-import 'package:demix/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class OrderDetailsPage extends StatelessWidget {
-  const OrderDetailsPage({super.key, required this.orderId});
+class OrderDetailsView extends StatelessWidget {
+  const OrderDetailsView({super.key, required this.orderId});
 
   final String orderId;
 

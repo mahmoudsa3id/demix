@@ -7,25 +7,24 @@ import 'package:demix/features/orders/domain/entities/order_entity.dart';
 import 'package:demix/features/orders/presentation/cubit/orders_list_cubit.dart';
 import 'package:demix/features/orders/presentation/pages/order_success_page.dart';
 import 'package:demix/features/orders/presentation/pages/widgets/status_time_line.dart';
-import 'package:demix/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class OrdersPage extends StatelessWidget {
-  const OrdersPage({super.key});
+class OrdersView extends StatelessWidget {
+  const OrdersViewBody({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<OrdersListCubit>()..load(),
-      child: const _OrdersView(),
+      child: const OrdersViewBody(),
     );
   }
 }
 
-class _OrdersView extends StatelessWidget {
-  const _OrdersView();
+class OrdersViewBody extends StatelessWidget {
+  const OrdersView({super.key});
 
   @override
   Widget build(BuildContext context) {

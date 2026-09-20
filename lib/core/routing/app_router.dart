@@ -34,14 +34,14 @@ import 'package:demix/features/favorite/presentation/view/favorite_view.dart';
 import 'package:demix/features/home/presentation/views/home_view.dart';
 
 import 'package:demix/features/location/presentation/cubit/location_cubit.dart';
-import 'package:demix/features/location/presentation/pages/location_page.dart';
-import 'package:demix/features/location/presentation/pages/saved_location_page.dart';
+import 'package:demix/features/location/presentation/views/location_page.dart';
+import 'package:demix/features/location/presentation/views/saved_location_page.dart';
 
 import 'package:demix/features/onboarding/presentation/onboarding_view.dart';
 
 import 'package:demix/features/orders/presentation/pages/order_details_page.dart';
 import 'package:demix/features/orders/presentation/pages/order_success_page.dart';
-import 'package:demix/features/orders/presentation/pages/orders_page.dart';
+import 'package:demix/features/orders/presentation/pages/orders_view.dart';
 
 import 'package:demix/features/product_ordering/presentation/pages/product_details_page.dart';
 
@@ -294,7 +294,10 @@ class AppRouter {
               path: RoutePaths.orders,
               name: 'orders',
               pageBuilder: (context, state) {
-                return _animatedPage(state: state, child: const OrdersPage());
+                return _animatedPage(
+                  state: state,
+                  child: const OrdersViewBody(),
+                );
               },
             ),
 
@@ -653,7 +656,7 @@ class AppRouter {
 
             return _animatedPage(
               state: state,
-              child: OrderSuccessPage(
+              child: OrderSuccessView(
                 orderId: orderId,
                 orderNumber: orderNumber,
               ),
@@ -672,7 +675,7 @@ class AppRouter {
 
             return _animatedPage(
               state: state,
-              child: OrderDetailsPage(orderId: orderId),
+              child: OrderDetailsView(orderId: orderId),
             );
           },
         ),
