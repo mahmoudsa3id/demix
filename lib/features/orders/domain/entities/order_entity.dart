@@ -41,9 +41,7 @@ class DeliveryAddressSnapshot extends Equatable {
   }
 
   static double _toDouble(dynamic value) {
-    if (value is num) {
-      return value.toDouble();
-    }
+    if (value is num) return value.toDouble();
 
     return double.tryParse(value?.toString() ?? '') ?? 0.0;
   }
@@ -69,6 +67,9 @@ class OrderEntity extends Equatable {
     this.businessImageUrl,
     required this.items,
     required this.address,
+    required this.customerName,
+    required this.customerPhone,
+    this.addressDetails,
     required this.subtotal,
     required this.deliveryFee,
     required this.discount,
@@ -87,7 +88,12 @@ class OrderEntity extends Equatable {
   final String? businessImageUrl;
 
   final List<OrderItemSnapshot> items;
+
   final DeliveryAddressSnapshot address;
+
+  final String customerName;
+  final String customerPhone;
+  final String? addressDetails;
 
   final double subtotal;
   final double deliveryFee;
@@ -108,6 +114,9 @@ class OrderEntity extends Equatable {
     businessImageUrl,
     items,
     address,
+    customerName,
+    customerPhone,
+    addressDetails,
     subtotal,
     deliveryFee,
     discount,

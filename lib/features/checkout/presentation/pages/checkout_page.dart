@@ -8,12 +8,13 @@ import 'package:demix/features/cart/domain/entities/cart_item.dart';
 import 'package:demix/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:demix/features/checkout/presentation/pages/widgets/address_card.dart';
 import 'package:demix/features/checkout/presentation/pages/widgets/price_summary.dart';
-import 'package:demix/features/orders/presentation/cubit/order_state.dart';
-import 'package:demix/features/payment/domain/entities/payment_method.dart';
-import 'package:demix/features/payment/presentation/widgets/payment_method_selector.dart';
+import 'package:demix/features/location/domain/entities/location_entity.dart';
+import 'package:demix/features/location/presentation/cubit/saved_location_cubit.dart';
 import 'package:demix/features/orders/domain/entities/order_entity.dart';
 import 'package:demix/features/orders/domain/entities/order_item_snapshot.dart';
 import 'package:demix/features/orders/presentation/cubit/order_cubit.dart';
+import 'package:demix/features/orders/presentation/cubit/order_state.dart';
+import 'package:demix/features/payment/domain/entities/payment_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,21 +44,44 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   DeliveryAddressSnapshot? _address;
 
-  PaymentMethod _payment = PaymentMethod.cashOnDelivery;
+  PaymentMethod? _payment;
 
   late final OrderCubit _orderCubit;
+  late final SavedLocationCubit _savedLocationCubit;
+
+  late final TextEditingController _nameController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _addressDetailsController;
 
   String? _orderNumber;
 
   @override
   void initState() {
     super.initState();
+
     _orderCubit = getIt<OrderCubit>();
+    _savedLocationCubit = getIt<SavedLocationCubit>();
+    _loadSavedLocation();
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    _nameController = TextEditingController(
+      text: user?.displayName?.trim() ?? '',
+    );
+    _phoneController = TextEditingController(
+      text: user?.phoneNumber?.trim() ?? '',
+    );
+
+    _addressDetailsController = TextEditingController();
   }
 
   @override
   void dispose() {
     _orderCubit.close();
+    _savedLocationCubit.close();
+    _nameController.dispose();
+    _phoneController.dispose();
+    _addressDetailsController.dispose();
     super.dispose();
   }
 
@@ -74,6 +98,31 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   double get total {
     return subtotal + deliveryFee;
+  }
+
+  DeliveryAddressSnapshot _snapshotFromLocation(LocationEntity location) {
+    return DeliveryAddressSnapshot(
+      formattedAddress: location.formattedAddress ?? '',
+      street: location.street ?? '',
+      area: location.area ?? '',
+      city: location.city ?? '',
+      latitude: location.latitude,
+      longitude: location.longitude,
+    );
+  }
+
+  Future<void> _loadSavedLocation() async {
+    await _savedLocationCubit.load();
+
+    final state = _savedLocationCubit.state;
+
+    if (!mounted || _address != null) return;
+
+    if (state is SavedLocationLoaded && state.location != null) {
+      setState(() {
+        _address = _snapshotFromLocation(state.location!);
+      });
+    }
   }
 
   Future<void> _chooseAddress() async {
@@ -103,6 +152,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
       return;
     }
 
+    final customerName = _nameController.text.trim();
+    final customerPhone = _phoneController.text.trim();
+    final addressDetails = _addressDetailsController.text.trim();
+
+    if (customerName.isEmpty) {
+      _showMessage('اكتب اسم المستلم');
+      return;
+    }
+
+    if (customerPhone.isEmpty) {
+      _showMessage('اكتب رقم الموبايل');
+      return;
+    }
+
+    if (_payment == null) {
+      _showMessage('اختار طريقة الدفع الأول');
+      return;
+    }
+
     final orderNumber =
         'DMX-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
 
@@ -114,15 +182,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
       userId: user.uid,
       businessId: widget.arguments.business.id,
       businessName: widget.arguments.business.name,
+      businessImageUrl: widget.arguments.business.logoUrl,
 
       items: widget.arguments.items
           .map(
             (item) => OrderItemSnapshot(
               productId: item.product.id,
-
-              // ✅ خده من الـ Business نفسه
               businessLogo: widget.arguments.business.logoUrl ?? '',
-
               businessId: item.product.businessId,
               categoryId: item.product.categoryId ?? '',
               name: item.product.name,
@@ -136,14 +202,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
           .toList(),
 
       address: address,
+      customerName: customerName,
+      customerPhone: customerPhone,
+      addressDetails: addressDetails.isEmpty ? null : addressDetails,
       subtotal: subtotal,
       deliveryFee: deliveryFee,
       discount: 0,
       total: total,
-      paymentMethod: _payment.name,
+      paymentMethod: _payment!.name,
       status: 'pending',
       createdAt: DateTime.now(),
     );
+
     await _orderCubit.create(order);
   }
 
@@ -159,29 +229,48 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _orderCubit,
-      child: BlocListener<OrderCubit, OrderState>(
-        listener: (context, state) {
-          if (state is OrderCreated) {
-            if (widget.arguments.clearCartAfterOrder) {
-              context.read<CartCubit>().clear();
-            }
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _orderCubit),
+        BlocProvider.value(value: _savedLocationCubit),
+      ],
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<SavedLocationCubit, SavedLocationState>(
+            listener: (context, state) {
+              if (state is SavedLocationLoaded) {
+                final location = state.location;
 
-            context.go(
-              '${RoutePaths.orderSuccessPath}/${state.orderId}'
-              '?orderNumber=${Uri.encodeComponent(_orderNumber ?? '')}',
-            );
+                if (location != null && _address == null) {
+                  setState(() {
+                    _address = _snapshotFromLocation(location);
+                  });
+                }
+              }
+            },
+          ),
+          BlocListener<OrderCubit, OrderState>(
+            listener: (context, state) {
+              if (state is OrderCreated) {
+                if (widget.arguments.clearCartAfterOrder) {
+                  context.read<CartCubit>().clear();
+                }
 
-            return;
-          }
+                context.go(
+                  '${RoutePaths.orderSuccessPath}/${state.orderId}'
+                  '?orderNumber=${Uri.encodeComponent(_orderNumber ?? '')}',
+                );
 
-          if (state is OrderFailure) {
-            _showMessage(state.message);
-          }
-        },
+                return;
+              }
+
+              if (state is OrderFailure) {
+                _showMessage(state.message);
+              }
+            },
+          ),
+        ],
         child: Scaffold(
-          backgroundColor: const Color(0xFFF8F8FB),
           body: AppPageBackground(
             child: Column(
               children: [
@@ -192,7 +281,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       const SliverToBoxAdapter(child: _CheckoutTopBar()),
 
                       SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 180),
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                         sliver: SliverList(
                           delegate: SliverChildListDelegate([
                             _RestaurantHero(
@@ -202,13 +291,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
                             const SizedBox(height: 20),
 
-                            _CheckoutSectionCard(
-                              icon: Icons.location_on_outlined,
-                              title: 'عنوان التوصيل',
-                              child: AddressCard(
-                                address: _address,
-                                onTap: _chooseAddress,
-                              ),
+                            BlocBuilder<SavedLocationCubit, SavedLocationState>(
+                              builder: (context, state) {
+                                return _DeliverySection(
+                                  address: _address,
+                                  onChooseAddress: _chooseAddress,
+                                  nameController: _nameController,
+                                  phoneController: _phoneController,
+                                  addressDetailsController:
+                                      _addressDetailsController,
+                                  loading:
+                                      state is SavedLocationLoading ||
+                                      state is SavedLocationInitial,
+                                );
+                              },
                             ),
 
                             const SizedBox(height: 16),
@@ -218,7 +314,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               title: 'طلبك',
                               trailing: Text(
                                 '${widget.arguments.items.length} منتجات',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
@@ -234,7 +330,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             _CheckoutSectionCard(
                               icon: Icons.account_balance_wallet_outlined,
                               title: 'طريقة الدفع',
-                              child: PaymentMethodSelector(
+                              child: _CheckoutPaymentSelector(
                                 value: _payment,
                                 onChanged: (value) {
                                   setState(() {
@@ -266,8 +362,384 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
           bottomNavigationBar: _CheckoutBottomBar(
             total: total,
-            addressSelected: _address != null,
+            addressSelected:
+                _address != null &&
+                _nameController.text.trim().isNotEmpty &&
+                _phoneController.text.trim().isNotEmpty &&
+                _payment != null,
             onPressed: _placeOrder,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// DELIVERY SECTION
+// ============================================================================
+
+class _DeliverySection extends StatelessWidget {
+  const _DeliverySection({
+    required this.address,
+    required this.onChooseAddress,
+    required this.nameController,
+    required this.phoneController,
+    required this.addressDetailsController,
+    required this.loading,
+  });
+
+  final DeliveryAddressSnapshot? address;
+  final VoidCallback onChooseAddress;
+  final TextEditingController nameController;
+  final TextEditingController phoneController;
+  final TextEditingController addressDetailsController;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    return _CheckoutSectionCard(
+      icon: Icons.location_on_outlined,
+      title: 'بيانات التوصيل',
+      trailing: TextButton(
+        onPressed: onChooseAddress,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          address == null ? 'اختار عنوان' : 'تغيير',
+          style: const TextStyle(
+            color: AppColors.primary,
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ),
+      child: Column(
+        children: [
+          if (loading && address == null)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'جاري تحميل العنوان المحفوظ...',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else ...[
+            AddressCard(address: address, onTap: onChooseAddress),
+
+            const SizedBox(height: 14),
+
+            _SectionLabel(
+              icon: Icons.person_outline_rounded,
+              text: 'بيانات المستلم',
+            ),
+
+            const SizedBox(height: 10),
+
+            _CheckoutTextField(
+              controller: nameController,
+              label: 'اسم المستلم',
+              hint: 'اكتب اسم المستلم',
+              icon: Icons.person_outline_rounded,
+              textInputAction: TextInputAction.next,
+            ),
+
+            const SizedBox(height: 10),
+
+            _CheckoutTextField(
+              controller: phoneController,
+              label: 'رقم الموبايل',
+              hint: '01xxxxxxxxx',
+              icon: Icons.phone_outlined,
+              keyboardType: TextInputType.phone,
+              textInputAction: TextInputAction.next,
+            ),
+
+            const SizedBox(height: 10),
+
+            _CheckoutTextField(
+              controller: addressDetailsController,
+              label: 'تفاصيل العنوان',
+              hint: 'مثال: الدور الثالث، شقة 8، بجوار صيدلية النور',
+              icon: Icons.notes_outlined,
+              maxLines: 3,
+              keyboardType: TextInputType.multiline,
+            ),
+
+            const SizedBox(height: 8),
+
+            const Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                'تفاصيل العنوان اختيارية ويمكن تعديلها قبل تأكيد الطلب.',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: AppColors.primary),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+        ),
+      ],
+    );
+  }
+}
+
+class _CheckoutTextField extends StatelessWidget {
+  const _CheckoutTextField({
+    required this.controller,
+    required this.label,
+    required this.hint,
+    required this.icon,
+    this.keyboardType,
+    this.textInputAction,
+    this.maxLines = 1,
+    this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final String hint;
+  final IconData icon;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final int maxLines;
+  final ValueChanged<String>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      maxLines: maxLines,
+      onChanged: onChanged,
+      textDirection: TextDirection.rtl,
+      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon, size: 19),
+        filled: true,
+        fillColor: const Color(0xFFF8F8FB),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Color(0xFFEDEDF2)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Color(0xFFEDEDF2)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.2),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// PAYMENT SELECTOR
+// ============================================================================
+
+class _CheckoutPaymentSelector extends StatelessWidget {
+  const _CheckoutPaymentSelector({
+    required this.value,
+    required this.onChanged,
+  });
+
+  final PaymentMethod? value;
+  final ValueChanged<PaymentMethod> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    const methods = [
+      (
+        method: PaymentMethod.cashOnDelivery,
+        icon: Icons.payments_outlined,
+        title: 'الدفع عند الاستلام',
+        subtitle: 'ادفع قيمة الطلب عند استلامه',
+      ),
+      (
+        method: PaymentMethod.visa,
+        icon: Icons.credit_card_outlined,
+        title: 'بطاقة بنكية',
+        subtitle: 'فيزا أو ماستر كارد',
+      ),
+    ];
+
+    return Column(
+      children: [
+        for (var i = 0; i < methods.length; i++) ...[
+          _PaymentOption(
+            method: methods[i].method,
+            icon: methods[i].icon,
+            title: methods[i].title,
+            subtitle: methods[i].subtitle,
+            selected: value == methods[i].method,
+            onTap: () => onChanged(methods[i].method),
+          ),
+          if (i != methods.length - 1) const SizedBox(height: 10),
+        ],
+      ],
+    );
+  }
+}
+
+class _PaymentOption extends StatelessWidget {
+  const _PaymentOption({
+    required this.method,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final PaymentMethod method;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(17),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.primary.withValues(alpha: 0.07)
+                : const Color(0xFFF8F8FB),
+            borderRadius: BorderRadius.circular(17),
+            border: Border.all(
+              color: selected
+                  ? AppColors.primary.withValues(alpha: 0.45)
+                  : const Color(0xFFEDEDF2),
+              width: selected ? 1.3 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: selected
+                      ? AppColors.primary.withValues(alpha: 0.12)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: Icon(
+                  icon,
+                  color: selected ? AppColors.primary : AppColors.textSecondary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 11),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: selected
+                        ? AppColors.primary
+                        : const Color(0xFFC9CAD1),
+                    width: 1.5,
+                  ),
+                ),
+                child: selected
+                    ? Center(
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+            ],
           ),
         ),
       ),

@@ -13,32 +13,16 @@ class AuthModel extends AuthSession {
     super.isAnonymous,
   });
 
-  factory AuthModel.fromFirebaseUser(
-    User user, {
-    required Set<UserRole> roles,
-  }) {
+  factory AuthModel.fromMap(Map<String, dynamic> map, {required User user}) {
     return AuthModel(
       userId: user.uid,
       provider: _mapProvider(user),
-      roles: roles,
-      phone: user.phoneNumber,
-      email: user.email,
-      displayName: user.displayName,
-      avatarUrl: user.photoURL,
+      roles: _mapRoles(map['roles']),
+      phone: map['phone']?.toString() ?? user.phoneNumber,
+      email: map['email']?.toString() ?? user.email,
+      displayName: map['displayName']?.toString() ?? user.displayName,
+      avatarUrl: map['avatarUrl']?.toString() ?? user.photoURL,
       isAnonymous: user.isAnonymous,
-    );
-  }
-
-  factory AuthModel.fromEntity(AuthSession entity) {
-    return AuthModel(
-      userId: entity.userId,
-      provider: entity.provider,
-      roles: entity.roles,
-      phone: entity.phone,
-      email: entity.email,
-      displayName: entity.displayName,
-      avatarUrl: entity.avatarUrl,
-      isAnonymous: entity.isAnonymous,
     );
   }
 
@@ -55,14 +39,26 @@ class AuthModel extends AuthSession {
     );
   }
 
+  static Set<UserRole> _mapRoles(dynamic value) {
+    if (value is! List) return {};
+
+    return value
+        .whereType<String>()
+        .map(
+          (name) => UserRole.values.firstWhere(
+            (role) => role.name == name,
+            orElse: () => UserRole.customer,
+          ),
+        )
+        .toSet();
+  }
+
   static AuthProviderType _mapProvider(User user) {
     if (user.isAnonymous) {
       return AuthProviderType.guest;
     }
 
-    final providers = user.providerData
-        .map((provider) => provider.providerId)
-        .toSet();
+    final providers = user.providerData.map((e) => e.providerId).toSet();
 
     if (providers.contains('google.com')) {
       return AuthProviderType.google;
